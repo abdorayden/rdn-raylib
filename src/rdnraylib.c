@@ -1,10 +1,16 @@
+#include <assert.h>
+#include <stdint.h>
 #include <rdn_native.h>
 // #include <raylib.h>
 #include "./raylib-6.0_linux_amd64/include/raylib.h"
 
 #define REG_FUNC(func) {#func , (func)}
+#define REG_TYPE struct { const char *func_name; RDNNativeFunction func; }
+#define LIB_REG_SIZE sizeof(reg_raylib) / sizeof(reg_raylib[0])
 
-bool rdn_init_window(RDNApi *api) {
+#define RDN_SIG(name) bool name(RDNApi* api)
+
+RDN_SIG(rdn_init_window) {
   if (api->stack_size(api) < 3) {
     api->raise_error(api, "init-window requires 3 params");
     return false;
@@ -24,27 +30,27 @@ bool rdn_init_window(RDNApi *api) {
   return true;
 }
 
-bool rdn_close_window(RDNApi *api) {
+RDN_SIG(rdn_close_window) {
   CloseWindow();
   return true;
 }
 
-bool rdn_begin_drawing(RDNApi *api) {
+RDN_SIG(rdn_begin_drawing) {
   BeginDrawing();
   return true;
 }
 
-bool rdn_end_drawing(RDNApi *api) {
+RDN_SIG(rdn_end_drawing) {
   EndDrawing();
   return true;
 }
 
-bool rdn_window_should_close(RDNApi *api) {
+RDN_SIG(rdn_window_should_close) {
   api->push_boolean(api, WindowShouldClose());
   return true;
 }
 
-bool rdn_clear_background(RDNApi *api) {
+RDN_SIG(rdn_clear_background) {
   if (api->stack_size(api) < 1) {
     api->raise_error(api, "requires hex color");
     return false;
@@ -58,7 +64,7 @@ bool rdn_clear_background(RDNApi *api) {
   return true;
 }
 
-bool rdn_draw_rect(RDNApi *api) {
+RDN_SIG(rdn_draw_rect) {
   if (api->stack_size(api) < 5) {
     api->raise_error(api, "requires 5");
     return false;
@@ -82,17 +88,17 @@ bool rdn_draw_rect(RDNApi *api) {
   return true;
 }
 
-bool rdn_get_width(RDNApi *api) {
+RDN_SIG(rdn_get_width) {
   api->push_integer(api, (int)GetScreenWidth());
   return true;
 }
 
-bool rdn_get_height(RDNApi *api) {
+RDN_SIG(rdn_get_height) {
   api->push_integer(api, (int)GetScreenHeight());
   return true;
 }
 
-bool rdn_set_target_fps(RDNApi *api) {
+RDN_SIG(rdn_set_target_fps) {
   long fps;
   api->to_integer(api, -1, &fps);
   SetTargetFPS((int)fps);
@@ -100,42 +106,42 @@ bool rdn_set_target_fps(RDNApi *api) {
   return true;
 }
 
-bool rdn_is_window_ready(RDNApi *api) {
+RDN_SIG(rdn_is_window_ready) {
   api->push_boolean(api, IsWindowReady());
   return true;
 }
 
-bool rdn_is_window_full_screen(RDNApi *api) {
+RDN_SIG(rdn_is_window_full_screen) {
   api->push_boolean(api, IsWindowFullscreen());
   return true;
 }
 
-bool rdn_is_window_hidden(RDNApi *api) {
+RDN_SIG(rdn_is_window_hidden) {
   api->push_boolean(api, IsWindowHidden());
   return true;
 }
 
-bool rdn_is_window_minimized(RDNApi *api) {
+RDN_SIG(rdn_is_window_minimized) {
   api->push_boolean(api, IsWindowMinimized());
   return true;
 }
 
-bool rdn_is_window_maximized(RDNApi *api) {
+RDN_SIG(rdn_is_window_maximized) {
   api->push_boolean(api, IsWindowMaximized());
   return true;
 }
 
-bool rdn_is_window_focused(RDNApi *api) {
+RDN_SIG(rdn_is_window_focused) {
   api->push_boolean(api, IsWindowFocused());
   return true;
 }
 
-bool rdn_is_window_resized(RDNApi *api) {
+RDN_SIG(rdn_is_window_resized) {
   api->push_boolean(api, IsWindowResized());
   return true;
 }
 
-bool rdn_is_window_state(RDNApi *api) {
+RDN_SIG(rdn_is_window_state) {
   bool ok = true;
 
   ok = api->stack_size(api) < 1;
@@ -156,7 +162,7 @@ bool rdn_is_window_state(RDNApi *api) {
   return true;
 }
 
-bool rdn_set_window_state(RDNApi *api) {
+RDN_SIG(rdn_set_window_state) {
   bool ok = true;
 
   ok = api->stack_size(api) < 1;
@@ -177,7 +183,7 @@ bool rdn_set_window_state(RDNApi *api) {
   return true;
 }
 
-bool rdn_clear_window_state(RDNApi *api) {
+RDN_SIG(rdn_clear_window_state) {
   bool ok = true;
 
   ok = api->stack_size(api) < 1;
@@ -198,35 +204,225 @@ bool rdn_clear_window_state(RDNApi *api) {
   return true;
 }
 
-bool rdn_toggle_full_screen(RDNApi *api) {
+RDN_SIG(rdn_toggle_full_screen) {
   ToggleFullscreen();
   return true;
 }
 
-bool rdn_toggle_borderless_windowed(RDNApi *api) {
+RDN_SIG(rdn_toggle_borderless_windowed) {
   ToggleBorderlessWindowed();
   return true;
 }
 
-bool rdn_maximize_window(RDNApi *api) {
+RDN_SIG(rdn_maximize_window) {
   MaximizeWindow();
   return true;
 }
 
-bool rdn_minimize_window(RDNApi *api) {
+RDN_SIG(rdn_minimize_window) {
   MinimizeWindow();
   return true;
 }
 
-bool rdn_restore_window(RDNApi *api) {
+RDN_SIG(rdn_restore_window) {
   RestoreWindow();
   return true;
 }
 
-struct {
-  const char *func_name;
-  RDNNativeFunction func;
-} reg_raylib[] = {
+RDN_SIG(rdn_set_window_icon) {
+    assert(false);
+    return true;
+}
+
+RDN_SIG(rdn_set_window_icons) {
+    assert(false);
+    return true;
+}
+
+RDN_SIG(rdn_set_window_title) {
+    if(api->stack_size(api) < 1) {
+        return false;
+    }
+
+    const char *title = api->to_string(api, -1);
+    if (title == NULL) {
+        return false;
+    }
+
+    SetWindowTitle(title);
+    return true;
+}
+
+RDN_SIG(rdn_set_window_position) {
+    if(api->stack_size(api) < 2) {
+        return false;
+    }
+
+    bool ok = true;
+    long x;
+    long y;
+
+    ok &= api->to_integer(api, -1 , &y);
+    ok &= api->to_integer(api, -2 , &x);
+
+    if (!ok) {
+        return false;
+    }
+
+    SetWindowPosition((int)x, (int)y);
+    return true;
+}
+
+RDN_SIG(rdn_window_monitor) {
+
+    if(api->stack_size(api) < 1) {
+        return false;
+    }
+
+    bool ok = true;
+    long monitor;
+
+    ok &= api->to_integer(api, -1 , &monitor);
+    if (!ok) {
+        return false;
+    }
+
+    SetWindowMonitor((int) monitor);
+    return true;
+}
+
+RDN_SIG(rdn_set_window_min_size) {
+
+    if(api->stack_size(api) < 2) {
+        return false;
+    }
+
+    bool ok = true;
+    long width;
+    long height;
+
+    ok &= api->to_integer(api, -1 , &height);
+    ok &= api->to_integer(api, -2 , &width);
+
+    if(!ok) {
+        return false;
+    }
+
+    SetWindowMinSize((int) width, (int) height);
+
+    return true;
+}
+
+RDN_SIG(rdn_set_window_max_size) {
+
+    if(api->stack_size(api) < 2) {
+        return false;
+    }
+
+    bool ok = true;
+    long width;
+    long height;
+
+    ok &= api->to_integer(api, -1 , &height);
+    ok &= api->to_integer(api, -2 , &width);
+
+    if(!ok) {
+        return false;
+    }
+
+    SetWindowMaxSize((int) width, (int) height);
+
+    return true;
+}
+
+RDN_SIG(rdn_set_window_size) {
+
+    if(api->stack_size(api) < 2) {
+        return false;
+    }
+
+    bool ok = true;
+    long width;
+    long height;
+
+    ok &= api->to_integer(api, -1 , &height);
+    ok &= api->to_integer(api, -2 , &width);
+
+    if(!ok) {
+        return false;
+    }
+
+    SetWindowSize((int) width, (int) height);
+
+    return true;
+}
+
+RDN_SIG(rdn_set_window_opacity) {
+
+    if(api->stack_size(api) < 1) {
+        return false;
+    }
+
+    bool ok = true;
+    double opacity;
+    ok &= api->to_number(api, -1 , &opacity);
+
+    if(!ok) {
+        return false;
+    }
+
+    SetWindowOpacity(opacity);
+
+    return true;
+}
+
+RDN_SIG(rdn_set_window_focused) {
+    SetWindowFocused();
+    return true;
+}
+
+RDN_SIG(rdn_get_window_handle) {
+    void* handle = GetWindowHandle();
+    bool ok = api->push_integer(api, (uintptr_t)handle);
+    if(!ok) {
+        return false;
+    }
+    return true;
+}
+
+RDN_SIG(rdn_get_render_width) {
+    bool ok = api->push_integer(api, (long)GetRenderWidth());
+    if(!ok) {
+        return false;
+    }
+    return true;
+}
+
+RDN_SIG(rdn_get_render_height) {
+    bool ok = api->push_integer(api, (long)GetRenderHeight());
+    if(!ok) {
+        return false;
+    }
+    return true;
+}
+
+RDN_SIG(rdn_get_monitor_count) {
+    bool ok = api->push_integer(api, (long)GetMonitorCount());
+    if(!ok) {
+        return false;
+    }
+    return true;
+}
+
+RDN_SIG(rdn_get_current_monitor) {
+    bool ok = api->push_integer(api, (long)GetCurrentMonitor());
+    if(!ok) {
+        return false;
+    }
+    return true;
+}
+
+REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_init_window),
     REG_FUNC(rdn_close_window),
     REG_FUNC(rdn_begin_drawing),
@@ -253,9 +449,23 @@ struct {
     REG_FUNC(rdn_minimize_window),
     REG_FUNC(rdn_restore_window),
 
-};
+    REG_FUNC(rdn_set_window_icon),
+    REG_FUNC(rdn_set_window_icons),
+    REG_FUNC(rdn_set_window_title),
+    REG_FUNC(rdn_set_window_position),
+    REG_FUNC(rdn_window_monitor),
+    REG_FUNC(rdn_set_window_min_size),
+    REG_FUNC(rdn_set_window_max_size),
+    REG_FUNC(rdn_set_window_size),
+    REG_FUNC(rdn_set_window_opacity),
+    REG_FUNC(rdn_set_window_focused),
+    REG_FUNC(rdn_get_window_handle),
+    REG_FUNC(rdn_get_render_width),
+    REG_FUNC(rdn_get_render_height),
+    REG_FUNC(rdn_get_monitor_count),
+    REG_FUNC(rdn_get_current_monitor),
 
-#define LIB_REG_SIZE sizeof(reg_raylib) / sizeof(reg_raylib[0])
+};
 
 bool rdn_module_init(RDNModule *module) {
 
