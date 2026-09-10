@@ -7,6 +7,37 @@ Typecheck::OGTypes open
 
 RdnRaylib module
 
+
+    ( 200 200 200 255 ) LIGHTGRAY  const
+    ( 130 130 130 255 ) GRAY       const
+    ( 80 80 80 255 ) DARKGRAY   const
+    ( 253 249 0 255 ) YELLOW     const
+    ( 255 203 0 255 ) GOLD       const
+    ( 255 161 0 255 ) ORANGE     const
+    ( 255 109 194 255 ) PINK       const
+    ( 230 41 55 255 ) RED        const
+    ( 190 33 55 255 ) MAROON     const
+    ( 0 228 48 255 ) GREEN      const
+    ( 0 158 47 255 ) LIME       const
+    ( 0 117 44 255 ) DARKGREEN  const
+    ( 102 191 255 255 ) SKYBLUE    const
+    ( 0 121 241 255 ) BLUE       const
+    ( 0 82 172 255 ) DARKBLUE   const
+    ( 200 122 255 255 ) PURPLE     const
+    ( 135 60 190 255 ) VIOLET     const
+    ( 112 31 126 255 ) DARKPURPLE const
+    ( 211 176 131 255 ) BEIGE      const
+    ( 127 106 79 255 ) BROWN      const
+    ( 76 63 47 255 ) DARKBROWN  const
+
+    ( 255 255 255 255 ) WHITE      
+    ( 0 0 0 255 ) BLACK      
+    ( 0 0 0 0 ) BLANK      
+    ( 255 0 255 255 ) MAGENTA    
+    ( 245 245 245 255 ) RAYWHITE   
+
+
+
     RlTypes module
         Any Color const
     end

@@ -8,7 +8,7 @@ window-should-close call ! loop
 
     begin-drawing call
 
-    0xff00ffff
+    RED
     clear-background call
 
     end-drawing call
