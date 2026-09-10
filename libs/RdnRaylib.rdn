@@ -1,13 +1,62 @@
 "../nativelibs/rdnraylib.so" loadnative
 
 "Typecheck" load
+"Core" load
 
 Typecheck::OGTypes open
 
 RdnRaylib module
 
     RlTypes module
-        Int Color const
+        Any Color const
+    end
+
+    [* private *]
+    Helpers module
+        colors-slice-to-int apply
+            ma-list let
+            ma-list 0 index 24 <<
+            ma-list 1 index 16 << 
+            +
+            ma-list 2 index 8 <<
+            ma-list 3 index
+            +
+            +
+
+        end
+
+        all-ints apply
+            ma-list let
+            ma-list 0 index Core::@is_int?
+            ma-list 1 index Core::@is_int? 
+            &
+            ma-list 2 index Core::@is_int?
+            ma-list 3 index Core::@is_int? 
+            &
+            &
+        end
+
+        check-colors apply
+            dup
+            Core::@is_list? if
+                dup
+                len 4 = if
+                    dup
+                    RdnRaylib::Helpers::all-ints
+                    if
+                        dup
+                        RdnRaylib::Helpers::colors-slice-to-int
+                    end
+                end
+            else
+                dup
+                Core::@is_int? ! if
+                    "value is not type of Color" error
+                    1 exit
+                end
+            end
+        end
+
     end
 
     init-window (Int Int Str) () defun
@@ -31,10 +80,12 @@ RdnRaylib module
     end
 
     clear-background (RdnRaylib::RlTypes::Color) () defun
+        RdnRaylib::Helpers::check-colors
         rdn-clear-background call
     end
 
     draw-rectangle (Int Int Int Int RdnRaylib::RlTypes::Color) () defun
+        RdnRaylib::Helpers::check-colors
         rdn-draw-rectangle call
     end
 

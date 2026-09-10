@@ -71,7 +71,7 @@ bool rdn_draw_rect(RDNApi* api) {
     result &= api->to_integer(api , -4 , &y);
     result &= api->to_integer(api , -5 , &x);
     if (!result) {
-        api->raise_error(api , "khra");
+        api->raise_error(api , "error in rdn_draw_rect stack params");
         return false;
     }
     DrawRectangle((int)x, (int)y, (int) width, (int) height, GetColor(hex_color));
