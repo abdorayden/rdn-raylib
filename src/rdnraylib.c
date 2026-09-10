@@ -273,7 +273,7 @@ RDN_SIG(rdn_set_window_position) {
     return true;
 }
 
-RDN_SIG(rdn_window_monitor) {
+RDN_SIG(rdn_set_window_monitor) {
 
     if(api->stack_size(api) < 1) {
         return false;
@@ -451,9 +451,10 @@ REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_set_window_icon),
     REG_FUNC(rdn_set_window_icons),
+
     REG_FUNC(rdn_set_window_title),
     REG_FUNC(rdn_set_window_position),
-    REG_FUNC(rdn_window_monitor),
+    REG_FUNC(rdn_set_window_monitor),
     REG_FUNC(rdn_set_window_min_size),
     REG_FUNC(rdn_set_window_max_size),
     REG_FUNC(rdn_set_window_size),

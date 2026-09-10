@@ -61,6 +61,7 @@ RdnRaylib module
     RlTypes module
         Any Color const
         Int ConfigFlag const
+        Int VoidPtr const
     end
 
     [* private *]
@@ -211,6 +212,69 @@ RdnRaylib module
 
     restore-window () () defun
         rdn_restore_window call
+    end
+
+    [* TODO: check later *]
+    set-window-icon () () defun
+        rdn_set_window_icon call
+    end
+
+    [* TODO: check later *]
+    set-window-icons () () defun
+        rdn_set_window_icons call
+    end
+
+    set-window-title (Str) () defun
+        rdn_set_window_title call
+    end
+
+    set-window-position (Int Int) () defun
+        rdn_set_window_position call
+    end
+
+    [* TODO: check later *]
+    set-window-monitor (Int [* monitor i think it's part of the flags*]) () defun
+        rdn_set_window_monitor call
+    end
+
+    set-window-min-size (Int Int) () defun
+        rdn_set_window_min_size call
+    end
+
+    set-window-max-size (Int Int) () defun
+        rdn_set_window_max_size call
+    end
+
+    set-window-size (Int Int) () defun
+        rdn_set_window_size call
+    end
+
+    set-window-opacity (Real) () defun
+        rdn_set_window_opacity call
+    end
+
+    set-window-focused () () defun
+        rdn_set_window_focused call
+    end
+
+    get-window-handle () (RdnRaylib::RlTypes::VoidPtr) defun
+        rdn_get_window_handle call
+    end
+
+    get-render-width () (Int) defun
+        rdn_get_render_width call
+    end
+
+    get-render-height () (Int) defun
+        rdn_get_render_height call
+    end
+
+    get-monitor-count () (Int) defun
+        rdn_get_monitor_count call
+    end
+
+    get-current-monitor () (Int) defun
+        rdn_get_current_monitor call
     end
 
 end
