@@ -37,9 +37,30 @@ RdnRaylib module
     ( 245 245 245 255 ) RAYWHITE   
 
 
+    ConfigFlags module
+
+        0x00000040 VsyncHint const
+        0x00000002 FullscreenMode const 
+        0x00000004 WindowResizable const
+        0x00000008 WindowUndecorated const 
+        0x00000080 WindowHidden      const 
+        0x00000200 WindowMinimized   const 
+        0x00000400 WindowMaximized   const 
+        0x00000800 WindowUnfocused   const 
+        0x00001000 WindowTopmost     const 
+        0x00000100 WindowAlways_run  const 
+        0x00000010 WindowTransparent const 
+        0x00002000 WindowHighdpi     const 
+        0x00004000 WindowMousePassthrough const
+        0x00008000 BorderlessWindowedMode const
+        0x00000020 Msaa4xHint       const
+        0x00010000 InterlacedHint    const
+
+    end
 
     RlTypes module
         Any Color const
+        Int ConfigFlag const
     end
 
     [* private *]
@@ -91,45 +112,105 @@ RdnRaylib module
     end
 
     init-window (Int Int Str) () defun
-        rdn-init-window call
+        rdn_init_window call
     end
 
     close-window () () defun
-        rdn-close-window call
+        rdn_close_window call
     end
 
     begin-drawing () () defun
-        rdn-begin-drawing call
+        rdn_begin_drawing call
     end
 
     end-drawing () () defun
-        rdn-end-drawing call
+        rdn_end_drawing call
     end
 
     window-should-close () (Bool) defun
-        rdn-window-should-close call
+        rdn_window_should_close call
     end
 
     clear-background (RdnRaylib::RlTypes::Color) () defun
         RdnRaylib::Helpers::check-colors
-        rdn-clear-background call
+        rdn_clear_background call
     end
 
     draw-rectangle (Int Int Int Int RdnRaylib::RlTypes::Color) () defun
         RdnRaylib::Helpers::check-colors
-        rdn-draw-rectangle call
+        rdn_draw_rectangle call
     end
 
     get-width () (Int) defun
-        rdn-get-width call
+        rdn_get_width call
     end
 
     get-height () (Int) defun
-        rdn-get-height call
+        rdn_get_height call
     end
 
     set-target-fps (Int) () defun
-        rdn-set-target-fps call
+        rdn_set_target_fps call
+    end
+
+    is-window-ready () (Bool) defun
+        rdn_is_window_ready call
+    end
+    
+    is-window-full-screen () (Bool) defun
+        rdn_is_window_full_screen call
+    end
+
+    is-window-hidden () (Bool) defun
+        rdn_is_window_hidden call
+    end
+
+    is-window-minimized () (Bool) defun
+        rdn_is_window_minimized call
+    end
+
+    is-window-maximized () (Bool) defun
+        rdn_is_window_maximized call
+    end
+
+    is-window-focused () (Bool) defun
+        rdn_is_window_focused call
+    end
+
+    is-window-resized () (Bool) defun
+        rdn_is_window_resized call
+    end
+
+    is-window-state (RdnRaylib::RlTypes::ConfigFlag) (Bool) defun
+        rdn_is_window_state call
+    end
+
+    set-window-state (RdnRaylib::RlTypes::ConfigFlag) () defun
+        rdn_set_window_state call
+    end
+
+    clear-window-state (RdnRaylib::RlTypes::ConfigFlag) () defun
+        rdn_clear_window_state call
+    end
+
+    toggle-full-screen () () defun
+        rdn_toggle_full_screen call
+    end
+
+    toggle-borderless-windowed () () defun
+        rdn_toggle_borderless_windowed call
+    end
+
+    maximize-window () () defun
+        rdn_maximize_window call
+    end
+
+    minimize-window () () defun
+        rdn_minimize_window call
+    end
+
+    restore-window () () defun
+        rdn_restore_window call
     end
 
 end
