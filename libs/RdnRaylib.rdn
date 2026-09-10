@@ -1,0 +1,53 @@
+"../nativelibs/rdnraylib.so" loadnative
+
+"Typecheck" load
+
+Typecheck::OGTypes open
+
+RdnRaylib module
+
+    RlTypes module
+        Int Color const
+    end
+
+    init-window (Int Int Str) () defun
+        rdn-init-window call
+    end
+
+    close-window () () defun
+        rdn-close-window call
+    end
+
+    begin-drawing () () defun
+        rdn-begin-drawing call
+    end
+
+    end-drawing () () defun
+        rdn-end-drawing call
+    end
+
+    window-should-close () (Bool) defun
+        rdn-window-should-close call
+    end
+
+    clear-background (RdnRaylib::RlTypes::Color) () defun
+        rdn-clear-background call
+    end
+
+    draw-rectangle (Int Int Int Int RdnRaylib::RlTypes::Color) () defun
+        rdn-draw-rectangle call
+    end
+
+    get-width () (Int) defun
+        rdn-get-width call
+    end
+
+    get-height () (Int) defun
+        rdn-get-height call
+    end
+
+    set-target-fps (Int) () defun
+        rdn-set-target-fps call
+    end
+
+end

@@ -1,0 +1,20 @@
+"./libs/RdnRaylib" load
+
+RdnRaylib open
+
+800 600 "rdn programming language" init-window call
+
+window-should-close call ! loop
+
+    begin-drawing call
+
+    0xffff00ff
+    clear-background call
+
+    end-drawing call
+
+
+    window-should-close call !
+end
+
+close-window call
