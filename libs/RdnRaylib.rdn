@@ -62,6 +62,7 @@ RdnRaylib module
         Any Color const
         Int ConfigFlag const
         Int VoidPtr const
+        List Vector2 const
     end
 
     [* private *]
@@ -275,6 +276,89 @@ RdnRaylib module
 
     get-current-monitor () (Int) defun
         rdn_get_current_monitor call
+    end
+
+    get-monitor-position (Int) (RdnRaylib::RlTypes::Vector2) defun
+        rdn_get_monitor_position call
+    end
+
+    get-monitor-width (Int) (Int) defun
+        rdn_get_monitor_width call
+    end
+
+    get-monitor-height (Int) (Int) defun
+        rdn_get_monitor_height call
+    end
+
+    get-monitor-physical-width (Int) (Int) defun
+        rdn_get_monitor_physical_width call
+    end
+
+    get-monitor-physical-height (Int) (Int) defun
+        rdn_get_monitor_physical_height call
+    end
+
+    get-monitor-refresh-rate (Int) (Int) defun
+        rdn_get_monitor_refresh_rate call
+    end
+
+    get-window-position () (RdnRaylib::RlTypes::Vector2) defun
+        rdn_get_window_position call
+    end
+
+    get-window-scale-dpi () (RdnRaylib::RlTypes::Vector2) defun
+        rdn_get_window_scale_dpi call
+    end
+
+    get-monitor-name (Int) (Str) defun
+        rdn_get_monitor_name call
+    end
+
+    set-clipboard-text (Str) () defun
+        rdn_set_clipboard_text call
+    end
+
+    get-clipboard-text (Str) () defun
+        rdn_get_clipboard_text call
+    end
+
+    get-clipboard-image () () defun
+        [*
+        *   TODO: Image not implemented
+        * *]
+        rdn_get_clipboard_image call
+    end
+
+    enable-event-waiting () () defun
+        rdn_enable_event_waiting call
+    end
+
+    disable-event-waiting () () defun
+        rdn_disable_event_waiting call
+    end
+
+    show-cursor () () defun
+        rdn_show_cursor call
+    end
+
+    hide-cursor () () defun
+        rdn_hide_cursor call
+    end
+
+    is-cursor-hidden () (Bool) defun
+        rdn_is_cursor_hidden call
+    end
+
+    enable-cursor () () defun
+        rdn_enable_cursor call
+    end
+
+    disable-cursor () () defun
+        rdn_disable_cursor call
+    end
+
+    is-cursor-on-screen () (Bool) defun
+        rdn_is_cursor_on_screen call
     end
 
 end

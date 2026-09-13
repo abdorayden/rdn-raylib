@@ -422,7 +422,245 @@ RDN_SIG(rdn_get_current_monitor) {
     return true;
 }
 
+RDN_SIG(rdn_get_monitor_position) {
+
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    bool ok = true;
+    long monitor;
+
+    ok &= api->to_integer(api, -1 , &monitor);
+
+    if (!ok) {
+        return false;
+    }
+
+    Vector2 position = GetMonitorPosition((int) monitor);
+
+    ok &= api->push_list(api);
+    ok &= api->push_integer(api, position.x);
+    ok &= api->list_append(api, -2,-1);
+    ok &= api->pop(api, 1);
+    ok &= api->push_integer(api, position.y);
+    ok &= api->list_append(api, -2,-1);
+    ok &= api->pop(api, 1);
+
+    if (!ok) {
+        return false;
+    }
+
+    return true;
+}
+
+RDN_SIG(rdn_get_monitor_width) {
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    bool ok = true;
+    long monitor;
+
+    ok &= api->to_integer(api, -1 , &monitor);
+
+    if (!ok) {
+        return false;
+    }
+
+    ok &= api->push_integer(api, (long)GetMonitorWidth((int) monitor));
+    return ok;
+}
+
+RDN_SIG(rdn_get_monitor_height) {
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    bool ok = true;
+    long monitor;
+
+    ok &= api->to_integer(api, -1 , &monitor);
+
+    if (!ok) {
+        return false;
+    }
+
+    ok &= api->push_integer(api, (long)GetMonitorHeight((int) monitor));
+    return ok;
+}
+
+RDN_SIG(rdn_get_monitor_physical_width) {
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+    bool ok = true;
+    long monitor;
+    ok &= api->to_integer(api, -1 , &monitor);
+    if (!ok) {
+        return false;
+    }
+    ok &= api->push_integer(api, (long)GetMonitorPhysicalWidth((int) monitor));
+    return ok;
+}
+
+RDN_SIG(rdn_get_monitor_physical_height) {
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+    bool ok = true;
+    long monitor;
+    ok &= api->to_integer(api, -1 , &monitor);
+    if (!ok) {
+        return false;
+    }
+    ok &= api->push_integer(api, (long)GetMonitorPhysicalHeight((int) monitor));
+    return ok;
+}
+
+RDN_SIG(rdn_get_monitor_refresh_rate) {
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+    bool ok = true;
+    long monitor;
+    ok &= api->to_integer(api, -1 , &monitor);
+    if (!ok) {
+        return false;
+    }
+    ok &= api->push_integer(api, (long)GetMonitorRefreshRate((int) monitor));
+    return ok;
+}
+
+RDN_SIG(rdn_get_window_position) {
+
+    Vector2 position = GetWindowPosition();
+    bool ok = true;
+
+    ok &= api->push_list(api);
+    ok &= api->push_integer(api,position.x);
+    ok &= api->list_append(api, -2, -1);
+    ok &= api->pop(api,1);
+
+    ok &= api->push_integer(api,position.y);
+    ok &= api->list_append(api, -2, -1);
+    ok &= api->pop(api,1);
+
+    return ok;
+}
+
+RDN_SIG(rdn_get_window_scale_dpi) {
+
+    Vector2 position = GetWindowScaleDPI();
+    bool ok = true;
+
+    ok &= api->push_list(api);
+    ok &= api->push_integer(api,position.x);
+    ok &= api->list_append(api, -2, -1);
+    ok &= api->pop(api,1);
+
+    ok &= api->push_integer(api,position.y);
+    ok &= api->list_append(api, -2, -1);
+    ok &= api->pop(api,1);
+
+    return ok;
+}
+
+RDN_SIG(rdn_get_monitor_name) {
+
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    long monitor;
+    bool ok = true;
+
+    ok &= api->to_integer(api, -1, &monitor);
+    if (!ok) {
+        return false;
+    }
+
+    ok &= api->push_string(api, GetMonitorName((int)monitor));
+
+    return ok;
+}
+
+RDN_SIG(rdn_set_clipboard_text) {
+
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    const char* clipbtext = api->to_string(api, -1);
+    if (clipbtext == NULL) return false;
+
+    SetClipboardText(clipbtext);
+    return true;
+}
+
+RDN_SIG(rdn_get_clipboard_text) {
+    return api->push_string(api, GetClipboardText());
+}
+
+RDN_SIG(rdn_get_clipboard_image) {
+    assert(false);
+    return true;
+}
+
+RDN_SIG(rdn_enable_event_waiting) {
+    EnableEventWaiting();
+    return true;
+}
+
+RDN_SIG(rdn_disable_event_waiting) {
+    DisableEventWaiting();
+    return true;
+}
+
+RDN_SIG(rdn_show_cursor) {
+    ShowCursor();
+    return true;
+}
+
+RDN_SIG(rdn_hide_cursor) {
+    HideCursor();
+    return true;
+}
+
+RDN_SIG(rdn_is_cursor_hidden) {
+    return api->push_boolean(api, IsCursorHidden());
+}
+
+RDN_SIG(rdn_enable_cursor) {
+    EnableCursor();
+    return true;
+}
+
+RDN_SIG(rdn_disable_cursor) {
+    DisableCursor();
+    return true;
+}
+
+RDN_SIG(rdn_is_cursor_on_screen) {
+    return api->push_boolean(api, IsCursorOnScreen());
+}
+
+
 REG_TYPE reg_raylib[] = {
+    REG_FUNC(rdn_get_monitor_position),
+    REG_FUNC(rdn_get_monitor_width),
+    REG_FUNC(rdn_get_monitor_height),
+    REG_FUNC(rdn_get_monitor_physical_width),
+    REG_FUNC(rdn_get_monitor_physical_height),
+    REG_FUNC(rdn_get_monitor_refresh_rate),
+    REG_FUNC(rdn_get_window_position),
+    REG_FUNC(rdn_get_window_scale_dpi),
+    REG_FUNC(rdn_get_monitor_name),
+    REG_FUNC(rdn_set_clipboard_text),
+    REG_FUNC(rdn_get_clipboard_text),
+    REG_FUNC(rdn_get_clipboard_image),
+
+
     REG_FUNC(rdn_init_window),
     REG_FUNC(rdn_close_window),
     REG_FUNC(rdn_begin_drawing),
