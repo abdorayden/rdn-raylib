@@ -63,6 +63,8 @@ RdnRaylib module
         Int ConfigFlag const
         Int VoidPtr const
         List Vector2 const
+        List Camera2d const
+        List Camera3d const
     end
 
     [* private *]
@@ -359,6 +361,22 @@ RdnRaylib module
 
     is-cursor-on-screen () (Bool) defun
         rdn_is_cursor_on_screen call
+    end
+
+    begin-mode-2d (RdnRaylib::RlTypes::Camera2d) () defun
+        rdn_begin_mode_2d call
+    end
+
+    end-mode-2d () () defun
+        rdn_end_mode_2d call
+    end
+
+    begin-mode-3d (RdnRaylib::RlTypes::Camera3d) () defun
+        rdn_begin_mode_3d call
+    end
+
+    end-mode-3d () () defun
+        rdn_end_mode_3d call
     end
 
 end

@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <stdint.h>
-#include <rdn_native.h>
-// #include <raylib.h>
 #include "./raylib-6.0_linux_amd64/include/raylib.h"
+#include "rdn/include/rdn.h"
+#include "rdn/include/rdn_native.h"
 
 #define REG_FUNC(func) {#func , (func)}
 #define REG_TYPE struct { const char *func_name; RDNNativeFunction func; }
@@ -645,8 +645,159 @@ RDN_SIG(rdn_is_cursor_on_screen) {
     return api->push_boolean(api, IsCursorOnScreen());
 }
 
+// NOTE:  stopped at line 1048 on raylib header code
+
+// add some helpres
+
+Camera2D rdn_list_to_camera2d(Value* value, bool* ok) {
+    // TODO: implement to_list function on RDNApi interface
+    Camera2D cam2d = {0};
+    RDNValueList l = value->as.list;
+
+    if (
+            l.count != 4
+
+            && l.items[0]->type != VALUE_LIST 
+            && l.items[0]->as.list.count != 2 
+            && l.items[0]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[0]->as.list.items[1]->type != VALUE_DOUBLE
+
+            && l.items[1]->type != VALUE_LIST
+            && l.items[1]->as.list.count != 2 
+            && l.items[1]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[1]->as.list.items[1]->type != VALUE_DOUBLE
+
+            && l.items[2]->type != VALUE_DOUBLE
+            && l.items[3]->type != VALUE_DOUBLE
+            ) {
+        *ok = false;
+        return cam2d;
+    }
+    
+    cam2d.offset.x = (float)l.items[0]->as.list.items[0]->as.number;
+    cam2d.offset.y = (float)l.items[0]->as.list.items[1]->as.number;
+
+    cam2d.target.x = (float)l.items[1]->as.list.items[0]->as.number;
+    cam2d.target.y = (float)l.items[1]->as.list.items[1]->as.number;
+
+    cam2d.rotation = (float)l.items[2]->as.number;
+    cam2d.zoom     = (float)l.items[3]->as.number;
+
+    *ok = true;
+    return cam2d;
+}
+
+RDN_SIG(rdn_begin_mode_2d) {
+
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST) {
+        return false;
+    }
+
+    bool ok = true;
+    Camera2D cam2d = rdn_list_to_camera2d(value , &ok);
+    if (!ok) {
+        return false;
+    }
+    BeginMode2D(cam2d);
+    return true;
+}
+
+RDN_SIG(rdn_end_mode_2d) {
+    EndMode2D();
+    return true;
+}
+
+Camera3D rdn_list_to_camera3d(Value* value, bool* ok) {
+    Camera3D cam3d = {0};
+    RDNValueList l = value->as.list;
+    if (
+            l.count != 5
+
+            && l.items[0]->type != VALUE_LIST 
+            && l.items[0]->as.list.count != 3 
+            && l.items[0]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[0]->as.list.items[1]->type != VALUE_DOUBLE
+            && l.items[0]->as.list.items[2]->type != VALUE_DOUBLE
+
+            && l.items[1]->type != VALUE_LIST 
+            && l.items[1]->as.list.count != 3 
+            && l.items[1]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[1]->as.list.items[1]->type != VALUE_DOUBLE
+            && l.items[1]->as.list.items[2]->type != VALUE_DOUBLE
+
+            && l.items[2]->type != VALUE_LIST 
+            && l.items[2]->as.list.count != 3 
+            && l.items[2]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[2]->as.list.items[1]->type != VALUE_DOUBLE
+            && l.items[2]->as.list.items[2]->type != VALUE_DOUBLE
+
+            && l.items[3]->type != VALUE_DOUBLE
+            && l.items[4]->type != VALUE_INTEGER
+            ){
+        *ok = false;
+        return cam3d;
+    }
+
+    cam3d.position.x    = (float)l.items[0]->as.list.items[0]->as.number;
+    cam3d.position.y    = (float)l.items[0]->as.list.items[1]->as.number;
+    cam3d.position.z    = (float)l.items[0]->as.list.items[2]->as.number;
+
+    cam3d.target.x      = (float)l.items[1]->as.list.items[0]->as.number;
+    cam3d.target.y      = (float)l.items[1]->as.list.items[1]->as.number;
+    cam3d.target.z      = (float)l.items[1]->as.list.items[2]->as.number;
+
+    cam3d.up.x          = (float)l.items[2]->as.list.items[0]->as.number;
+    cam3d.up.y          = (float)l.items[2]->as.list.items[1]->as.number;
+    cam3d.up.z          = (float)l.items[2]->as.list.items[2]->as.number;
+
+    cam3d.fovy          = (float)l.items[3]->as.number;
+    cam3d.projection    = (int)l.items[4]->as.integer;
+
+    return cam3d;
+}
+
+RDN_SIG(rdn_begin_mode_3d) {
+
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST) {
+        return false;
+    }
+
+    bool ok = true;
+
+    Camera3D cam3d = rdn_list_to_camera3d(value , &ok);
+    if (!ok) {
+        return false;
+    }
+    BeginMode3D(cam3d);
+    return true;
+}
+
+RDN_SIG(rdn_end_mode_3d) {
+    EndMode3D();
+    return true;
+}
+
 
 REG_TYPE reg_raylib[] = {
+
+    REG_FUNC(rdn_begin_mode_2d),
+    REG_FUNC(rdn_end_mode_2d),
+
+    REG_FUNC(rdn_begin_mode_3d),
+    REG_FUNC(rdn_end_mode_3d),
+
     REG_FUNC(rdn_get_monitor_position),
     REG_FUNC(rdn_get_monitor_width),
     REG_FUNC(rdn_get_monitor_height),
@@ -659,7 +810,14 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_set_clipboard_text),
     REG_FUNC(rdn_get_clipboard_text),
     REG_FUNC(rdn_get_clipboard_image),
-
+    REG_FUNC(rdn_enable_event_waiting),
+    REG_FUNC(rdn_disable_event_waiting),
+    REG_FUNC(rdn_show_cursor),
+    REG_FUNC(rdn_hide_cursor),
+    REG_FUNC(rdn_is_cursor_hidden),
+    REG_FUNC(rdn_enable_cursor),
+    REG_FUNC(rdn_disable_cursor),
+    REG_FUNC(rdn_is_cursor_on_screen),
 
     REG_FUNC(rdn_init_window),
     REG_FUNC(rdn_close_window),
