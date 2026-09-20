@@ -14,6 +14,118 @@
 
 // helpers
 
+#define CONCAT_MAT(n) matrix.m##n = (float)l.items[(n)]->as.number
+
+Matrix rdn_list_to_matrix(Value* value , bool* ok) {
+    Matrix matrix = {0};
+    RDNValueList l = value->as.list;
+
+    if(l.count != 16) {
+        *ok = false;
+        return matrix;
+    }
+
+    for (size_t i = 0; i < l.count; ++i) {
+        if(l.items[i]->type != VALUE_DOUBLE) {
+            *ok = false;
+            return matrix;
+        }
+    }
+
+    CONCAT_MAT(0); CONCAT_MAT(1); CONCAT_MAT(2);
+    CONCAT_MAT(3); CONCAT_MAT(4); CONCAT_MAT(5);
+    CONCAT_MAT(6); CONCAT_MAT(7); CONCAT_MAT(8);
+    CONCAT_MAT(9); CONCAT_MAT(10); CONCAT_MAT(11);
+    CONCAT_MAT(12); CONCAT_MAT(13); CONCAT_MAT(14);
+    CONCAT_MAT(15);
+
+    return matrix;
+}
+
+VrStereoConfig rdn_list_to_vrstereoconfig(Value* value , bool* ok) {
+    VrStereoConfig vrstereoconfig = {0};
+    RDNValueList l = value->as.list;
+
+    if(
+            l.count != 8
+            && l.items[0]->type != VALUE_LIST
+            && l.items[0]->as.list.count != 2
+            && l.items[1]->type != VALUE_LIST
+            && l.items[1]->as.list.count != 2
+
+            && l.items[2]->type != VALUE_LIST
+            && l.items[2]->as.list.count != 2
+            && l.items[2]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[2]->as.list.items[1]->type != VALUE_DOUBLE
+
+            && l.items[3]->type != VALUE_LIST
+            && l.items[3]->as.list.count != 2
+            && l.items[3]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[3]->as.list.items[1]->type != VALUE_DOUBLE
+
+            && l.items[4]->type != VALUE_LIST
+            && l.items[4]->as.list.count != 2
+            && l.items[4]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[4]->as.list.items[1]->type != VALUE_DOUBLE
+
+            && l.items[5]->type != VALUE_LIST
+            && l.items[5]->as.list.count != 2
+            && l.items[5]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[5]->as.list.items[1]->type != VALUE_DOUBLE
+
+            && l.items[6]->type != VALUE_LIST
+            && l.items[6]->as.list.count != 2
+            && l.items[6]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[6]->as.list.items[1]->type != VALUE_DOUBLE
+
+            && l.items[7]->type != VALUE_LIST
+            && l.items[7]->as.list.count != 2
+            && l.items[7]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[7]->as.list.items[1]->type != VALUE_DOUBLE
+      ){
+        *ok = false;
+        return vrstereoconfig;
+    }
+
+    // i think it's safe
+    vrstereoconfig.projection[0] = rdn_list_to_matrix(l.items[0]->as.list.items[0], ok);
+    if (!*ok) {
+        return vrstereoconfig;
+    }
+    vrstereoconfig.projection[1] = rdn_list_to_matrix(l.items[0]->as.list.items[1], ok);
+    if (!*ok) {
+        return vrstereoconfig;
+    }
+    vrstereoconfig.viewOffset[0] = rdn_list_to_matrix(l.items[1]->as.list.items[0], ok);
+    if (!*ok) {
+        return vrstereoconfig;
+    }
+    vrstereoconfig.viewOffset[1] = rdn_list_to_matrix(l.items[1]->as.list.items[1], ok);
+    if (!*ok) {
+        return vrstereoconfig;
+    }
+
+    vrstereoconfig.leftLensCenter[0] = l.items[2]->as.list.items[0]->as.number;
+    vrstereoconfig.leftLensCenter[1] = l.items[2]->as.list.items[1]->as.number;
+
+    vrstereoconfig.rightLensCenter[0] = l.items[3]->as.list.items[0]->as.number;
+    vrstereoconfig.rightLensCenter[1] = l.items[3]->as.list.items[1]->as.number;
+
+    vrstereoconfig.leftScreenCenter[0] = l.items[4]->as.list.items[0]->as.number;
+    vrstereoconfig.leftScreenCenter[1] = l.items[4]->as.list.items[1]->as.number;
+
+    vrstereoconfig.rightScreenCenter[0] = l.items[5]->as.list.items[0]->as.number;
+    vrstereoconfig.rightScreenCenter[1] = l.items[5]->as.list.items[1]->as.number;
+
+    vrstereoconfig.scale[0] = l.items[6]->as.list.items[0]->as.number;
+    vrstereoconfig.scale[1] = l.items[6]->as.list.items[1]->as.number;
+
+    vrstereoconfig.scaleIn[0] = l.items[7]->as.list.items[0]->as.number;
+    vrstereoconfig.scaleIn[1] = l.items[7]->as.list.items[1]->as.number;
+
+    return vrstereoconfig;
+}
+
 Image rdn_list_to_image(Value* value , bool* ok) {
     Image image = {0};
     RDNValueList l = value->as.list;
@@ -1014,6 +1126,34 @@ RDN_SIG(rdn_end_scissor_mode) {
     return true;
 }
 
+RDN_SIG(rdn_begin_vr_stereo_mode) {
+    VrStereoConfig config = {0};
+
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST) {
+        return false;
+    }
+
+    bool ok = true;
+
+    config = rdn_list_to_vrstereoconfig(value, &ok);
+    if (!ok) {
+        return false;
+    }
+    BeginVrStereoMode(config);
+    return true;
+}
+
+RDN_SIG(rdn_end_vr_stereo_mode) {
+    EndVrStereoMode();
+    return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -1093,6 +1233,8 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_end_blend_mode),
     REG_FUNC(rdn_begin_scissor_mode),
     REG_FUNC(rdn_end_scissor_mode),
+    REG_FUNC(rdn_begin_vr_stereo_mode),
+    REG_FUNC(rdn_end_vr_stereo_mode),
 };
 
 bool rdn_module_init(RDNModule *module) {

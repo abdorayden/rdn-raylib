@@ -69,6 +69,8 @@ RdnRaylib module
         List Shader const
         List Icon const
         List Icons const
+        List VrStereoConfig const
+
     end
 
     [* private *]
@@ -410,6 +412,14 @@ RdnRaylib module
     end
 
     end-scissor-mode () () defun
+        rdn_end_shader_mode call
+    end
+
+    begin-vr-stereo-mode (RdnRaylib::RlTypes::VrStereoConfig) () defun
+        rdn_begin_shader_mode call
+    end
+
+    end-vr-stereo-mode () () defun
         rdn_end_shader_mode call
     end
 
