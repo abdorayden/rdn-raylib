@@ -1,4 +1,6 @@
 #include <assert.h>
+#include <rdn.h>
+#include <stddef.h>
 #include <stdint.h>
 #include "./raylib-6.0_linux_amd64/include/raylib.h"
 #include "rdn/include/rdn.h"
@@ -9,6 +11,185 @@
 #define LIB_REG_SIZE sizeof(reg_raylib) / sizeof(reg_raylib[0])
 
 #define RDN_SIG(name) bool name(RDNApi* api)
+
+// helpers
+
+Image rdn_list_to_image(Value* value , bool* ok) {
+    Image image = {0};
+    RDNValueList l = value->as.list;
+    if(
+            l.count != 5
+            && l.items[0]->type != VALUE_INTEGER
+            && l.items[1]->type != VALUE_INTEGER
+            && l.items[2]->type != VALUE_INTEGER
+            && l.items[3]->type != VALUE_INTEGER
+            && l.items[4]->type != VALUE_INTEGER
+      ){
+        *ok = false;
+        return image;
+    }
+
+    image.data = (void*)(uintptr_t)l.items[0]->as.integer;
+    image.width = (int)l.items[1]->as.integer;
+    image.height = (int)l.items[2]->as.integer;
+    image.mipmaps = (int)l.items[3]->as.integer;
+    image.format = (int)l.items[4]->as.integer;
+    return image;
+}
+
+Shader rdn_list_to_shader(Value* value, bool* ok) {
+    Shader shader = {0};
+    RDNValueList l = value->as.list;
+    if(
+            l.count != 2
+            && l.items[0]->type != VALUE_INTEGER
+            && l.items[1]->type != VALUE_INTEGER
+      ) {
+        *ok = false;
+        return shader;
+    }
+
+    shader.id = l.items[0]->as.integer;
+    // WARNING: this propebly will filled by other raylib function
+    // i don't know, is it safe ??
+    shader.locs = (int*)(uintptr_t)l.items[0]->as.integer;
+    return shader;
+}
+
+Texture rdn_list_to_texture(Value* value , bool* ok) {
+    Texture texture = {0};
+    RDNValueList l = value->as.list;
+    if (
+            l.count != 5
+            && l.items[0]->type != VALUE_INTEGER 
+            && l.items[1]->type != VALUE_INTEGER 
+            && l.items[2]->type != VALUE_INTEGER 
+            && l.items[3]->type != VALUE_INTEGER 
+            && l.items[4]->type != VALUE_INTEGER 
+            ) {
+        *ok = false;
+        return texture;
+    }
+    texture.id = l.items[0]->as.integer;
+    texture.width = l.items[1]->as.integer;
+    texture.height = l.items[2]->as.integer;
+    texture.mipmaps = l.items[3]->as.integer;
+    texture.format = l.items[4]->as.integer;
+    return texture;
+}
+
+RenderTexture rdn_list_to_render_texture(Value* value, bool* ok) {
+    RenderTexture render_texture = {0};
+    RDNValueList l = value->as.list;
+
+    if (
+            l.count != 3
+            && l.items[0]->type != VALUE_INTEGER
+            && l.items[1]->type != VALUE_LIST
+            && l.items[2]->type != VALUE_LIST
+       ) {
+        *ok = false;
+        return render_texture;
+    }
+
+    render_texture.id = l.items[0]->as.integer;
+    render_texture.texture = rdn_list_to_texture(l.items[1], ok);
+    if (!*ok) {
+        return render_texture;
+    }
+    render_texture.depth = rdn_list_to_texture(l.items[2], ok);
+    if (!*ok) {
+        return render_texture;
+    }
+    return render_texture;
+}
+
+Camera3D rdn_list_to_camera3d(Value* value, bool* ok) {
+    Camera3D cam3d = {0};
+    RDNValueList l = value->as.list;
+    if (
+            l.count != 5
+
+            && l.items[0]->type != VALUE_LIST 
+            && l.items[0]->as.list.count != 3 
+            && l.items[0]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[0]->as.list.items[1]->type != VALUE_DOUBLE
+            && l.items[0]->as.list.items[2]->type != VALUE_DOUBLE
+
+            && l.items[1]->type != VALUE_LIST 
+            && l.items[1]->as.list.count != 3 
+            && l.items[1]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[1]->as.list.items[1]->type != VALUE_DOUBLE
+            && l.items[1]->as.list.items[2]->type != VALUE_DOUBLE
+
+            && l.items[2]->type != VALUE_LIST 
+            && l.items[2]->as.list.count != 3 
+            && l.items[2]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[2]->as.list.items[1]->type != VALUE_DOUBLE
+            && l.items[2]->as.list.items[2]->type != VALUE_DOUBLE
+
+            && l.items[3]->type != VALUE_DOUBLE
+            && l.items[4]->type != VALUE_INTEGER
+            ){
+        *ok = false;
+        return cam3d;
+    }
+
+    cam3d.position.x    = (float)l.items[0]->as.list.items[0]->as.number;
+    cam3d.position.y    = (float)l.items[0]->as.list.items[1]->as.number;
+    cam3d.position.z    = (float)l.items[0]->as.list.items[2]->as.number;
+
+    cam3d.target.x      = (float)l.items[1]->as.list.items[0]->as.number;
+    cam3d.target.y      = (float)l.items[1]->as.list.items[1]->as.number;
+    cam3d.target.z      = (float)l.items[1]->as.list.items[2]->as.number;
+
+    cam3d.up.x          = (float)l.items[2]->as.list.items[0]->as.number;
+    cam3d.up.y          = (float)l.items[2]->as.list.items[1]->as.number;
+    cam3d.up.z          = (float)l.items[2]->as.list.items[2]->as.number;
+
+    cam3d.fovy          = (float)l.items[3]->as.number;
+    cam3d.projection    = (int)l.items[4]->as.integer;
+
+    return cam3d;
+}
+
+Camera2D rdn_list_to_camera2d(Value* value, bool* ok) {
+    // TODO: implement to_list function on RDNApi interface
+    Camera2D cam2d = {0};
+    RDNValueList l = value->as.list;
+
+    if (
+            l.count != 4
+
+            && l.items[0]->type != VALUE_LIST 
+            && l.items[0]->as.list.count != 2 
+            && l.items[0]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[0]->as.list.items[1]->type != VALUE_DOUBLE
+
+            && l.items[1]->type != VALUE_LIST
+            && l.items[1]->as.list.count != 2 
+            && l.items[1]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[1]->as.list.items[1]->type != VALUE_DOUBLE
+
+            && l.items[2]->type != VALUE_DOUBLE
+            && l.items[3]->type != VALUE_DOUBLE
+            ) {
+        *ok = false;
+        return cam2d;
+    }
+    
+    cam2d.offset.x = (float)l.items[0]->as.list.items[0]->as.number;
+    cam2d.offset.y = (float)l.items[0]->as.list.items[1]->as.number;
+
+    cam2d.target.x = (float)l.items[1]->as.list.items[0]->as.number;
+    cam2d.target.y = (float)l.items[1]->as.list.items[1]->as.number;
+
+    cam2d.rotation = (float)l.items[2]->as.number;
+    cam2d.zoom     = (float)l.items[3]->as.number;
+
+    *ok = true;
+    return cam2d;
+}
 
 RDN_SIG(rdn_init_window) {
   if (api->stack_size(api) < 3) {
@@ -230,12 +411,46 @@ RDN_SIG(rdn_restore_window) {
 }
 
 RDN_SIG(rdn_set_window_icon) {
-    assert(false);
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST) {
+        return false;
+    }
+
+    bool ok = true;
+    Image image = rdn_list_to_image(value, &ok);
+    if (!ok) {
+        return false;
+    }
+    SetWindowIcon(image);
     return true;
 }
 
-RDN_SIG(rdn_set_window_icons) {
-    assert(false);
+RDN_SIG(rdn_set_window_icons) { // NOTE: this will accept a list direcly
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST) {
+        return false;
+    }
+
+    bool ok = true;
+    size_t n = value->as.list.count;
+    Image images[n + 1];
+
+    for (size_t i = 0; i < n; ++i) {
+        images[i] = rdn_list_to_image(value->as.list.items[i], &ok);
+        if (!ok) {
+            // list must be all images type
+            return false;
+        }
+    }
+    SetWindowIcons(images,n);
     return true;
 }
 
@@ -647,46 +862,6 @@ RDN_SIG(rdn_is_cursor_on_screen) {
 
 // NOTE:  stopped at line 1048 on raylib header code
 
-// add some helpres
-
-Camera2D rdn_list_to_camera2d(Value* value, bool* ok) {
-    // TODO: implement to_list function on RDNApi interface
-    Camera2D cam2d = {0};
-    RDNValueList l = value->as.list;
-
-    if (
-            l.count != 4
-
-            && l.items[0]->type != VALUE_LIST 
-            && l.items[0]->as.list.count != 2 
-            && l.items[0]->as.list.items[0]->type != VALUE_DOUBLE
-            && l.items[0]->as.list.items[1]->type != VALUE_DOUBLE
-
-            && l.items[1]->type != VALUE_LIST
-            && l.items[1]->as.list.count != 2 
-            && l.items[1]->as.list.items[0]->type != VALUE_DOUBLE
-            && l.items[1]->as.list.items[1]->type != VALUE_DOUBLE
-
-            && l.items[2]->type != VALUE_DOUBLE
-            && l.items[3]->type != VALUE_DOUBLE
-            ) {
-        *ok = false;
-        return cam2d;
-    }
-    
-    cam2d.offset.x = (float)l.items[0]->as.list.items[0]->as.number;
-    cam2d.offset.y = (float)l.items[0]->as.list.items[1]->as.number;
-
-    cam2d.target.x = (float)l.items[1]->as.list.items[0]->as.number;
-    cam2d.target.y = (float)l.items[1]->as.list.items[1]->as.number;
-
-    cam2d.rotation = (float)l.items[2]->as.number;
-    cam2d.zoom     = (float)l.items[3]->as.number;
-
-    *ok = true;
-    return cam2d;
-}
-
 RDN_SIG(rdn_begin_mode_2d) {
 
     if (api->stack_size(api) < 1) {
@@ -711,55 +886,6 @@ RDN_SIG(rdn_begin_mode_2d) {
 RDN_SIG(rdn_end_mode_2d) {
     EndMode2D();
     return true;
-}
-
-Camera3D rdn_list_to_camera3d(Value* value, bool* ok) {
-    Camera3D cam3d = {0};
-    RDNValueList l = value->as.list;
-    if (
-            l.count != 5
-
-            && l.items[0]->type != VALUE_LIST 
-            && l.items[0]->as.list.count != 3 
-            && l.items[0]->as.list.items[0]->type != VALUE_DOUBLE
-            && l.items[0]->as.list.items[1]->type != VALUE_DOUBLE
-            && l.items[0]->as.list.items[2]->type != VALUE_DOUBLE
-
-            && l.items[1]->type != VALUE_LIST 
-            && l.items[1]->as.list.count != 3 
-            && l.items[1]->as.list.items[0]->type != VALUE_DOUBLE
-            && l.items[1]->as.list.items[1]->type != VALUE_DOUBLE
-            && l.items[1]->as.list.items[2]->type != VALUE_DOUBLE
-
-            && l.items[2]->type != VALUE_LIST 
-            && l.items[2]->as.list.count != 3 
-            && l.items[2]->as.list.items[0]->type != VALUE_DOUBLE
-            && l.items[2]->as.list.items[1]->type != VALUE_DOUBLE
-            && l.items[2]->as.list.items[2]->type != VALUE_DOUBLE
-
-            && l.items[3]->type != VALUE_DOUBLE
-            && l.items[4]->type != VALUE_INTEGER
-            ){
-        *ok = false;
-        return cam3d;
-    }
-
-    cam3d.position.x    = (float)l.items[0]->as.list.items[0]->as.number;
-    cam3d.position.y    = (float)l.items[0]->as.list.items[1]->as.number;
-    cam3d.position.z    = (float)l.items[0]->as.list.items[2]->as.number;
-
-    cam3d.target.x      = (float)l.items[1]->as.list.items[0]->as.number;
-    cam3d.target.y      = (float)l.items[1]->as.list.items[1]->as.number;
-    cam3d.target.z      = (float)l.items[1]->as.list.items[2]->as.number;
-
-    cam3d.up.x          = (float)l.items[2]->as.list.items[0]->as.number;
-    cam3d.up.y          = (float)l.items[2]->as.list.items[1]->as.number;
-    cam3d.up.z          = (float)l.items[2]->as.list.items[2]->as.number;
-
-    cam3d.fovy          = (float)l.items[3]->as.number;
-    cam3d.projection    = (int)l.items[4]->as.integer;
-
-    return cam3d;
 }
 
 RDN_SIG(rdn_begin_mode_3d) {
@@ -789,14 +915,106 @@ RDN_SIG(rdn_end_mode_3d) {
     return true;
 }
 
+RDN_SIG(rdn_begin_texture_mode) {
+    if(api->stack_size(api) < 1) {
+        return false;
+    }
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST) {
+        return false;
+    }
+
+    bool ok = true;
+
+    RenderTexture2D target = (RenderTexture2D) rdn_list_to_render_texture(value, &ok);
+    if (!ok) {
+        return false;
+    }
+    BeginTextureMode(target);
+    return true;
+}
+
+RDN_SIG(rdn_end_texture_mode) {
+    EndTextureMode();
+    return true;
+}
+
+RDN_SIG(rdn_begin_shader_mode) {
+    if(api->stack_size(api) < 1) {
+        return false;
+    }
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST) {
+        return false;
+    }
+
+    bool ok = true;
+
+    Shader shader = rdn_list_to_shader(value, &ok);
+    if (!ok) {
+        return false;
+    }
+    BeginShaderMode(shader);
+    return true;
+}
+
+RDN_SIG(rdn_end_shader_mode) {
+    EndShaderMode();
+    return true;
+}
+
+RDN_SIG(rdn_begin_blend_mode) {
+
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    long mode;
+    bool ok = api->to_integer(api, -1 , &mode);
+    if(!ok) {
+        return false;
+    }
+    BeginBlendMode((int)mode);
+    return true;
+}
+
+RDN_SIG(rdn_end_blend_mode) {
+    EndBlendMode();
+    return true;
+}
+
+RDN_SIG(rdn_begin_scissor_mode) {
+
+    if (api->stack_size(api) < 4) {
+        return false;
+    }
+
+    bool ok = true;
+    long x;
+    long y;
+    long width;
+    long height;
+
+    ok &= api->to_integer(api, -1  , &x);
+    ok &= api->to_integer(api, -2  , &y);
+    ok &= api->to_integer(api, -3  , &width);
+    ok &= api->to_integer(api, -4  , &height);
+
+    if (!ok) return false;
+
+    BeginScissorMode((int) x, (int) y, (int) width, (int) height);
+
+    return true;
+}
+
+RDN_SIG(rdn_end_scissor_mode) {
+    EndScissorMode();
+    return true;
+}
 
 REG_TYPE reg_raylib[] = {
-
-    REG_FUNC(rdn_begin_mode_2d),
-    REG_FUNC(rdn_end_mode_2d),
-
-    REG_FUNC(rdn_begin_mode_3d),
-    REG_FUNC(rdn_end_mode_3d),
 
     REG_FUNC(rdn_get_monitor_position),
     REG_FUNC(rdn_get_monitor_width),
@@ -862,6 +1080,19 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_get_monitor_count),
     REG_FUNC(rdn_get_current_monitor),
 
+    REG_FUNC(rdn_begin_mode_2d),
+    REG_FUNC(rdn_end_mode_2d),
+    REG_FUNC(rdn_begin_mode_3d),
+    REG_FUNC(rdn_end_mode_3d),
+
+    REG_FUNC(rdn_begin_texture_mode),
+    REG_FUNC(rdn_end_texture_mode),
+    REG_FUNC(rdn_begin_shader_mode),
+    REG_FUNC(rdn_end_shader_mode),
+    REG_FUNC(rdn_begin_blend_mode),
+    REG_FUNC(rdn_end_blend_mode),
+    REG_FUNC(rdn_begin_scissor_mode),
+    REG_FUNC(rdn_end_scissor_mode),
 };
 
 bool rdn_module_init(RDNModule *module) {

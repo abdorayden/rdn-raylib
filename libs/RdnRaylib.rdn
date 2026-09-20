@@ -65,6 +65,10 @@ RdnRaylib module
         List Vector2 const
         List Camera2d const
         List Camera3d const
+        List RenderTexture2D const
+        List Shader const
+        List Icon const
+        List Icons const
     end
 
     [* private *]
@@ -217,13 +221,11 @@ RdnRaylib module
         rdn_restore_window call
     end
 
-    [* TODO: check later *]
-    set-window-icon () () defun
+    set-window-icon (RdnRaylib::RlTypes::Icon) () defun
         rdn_set_window_icon call
     end
 
-    [* TODO: check later *]
-    set-window-icons () () defun
+    set-window-icons (RdnRaylib::RlTypes::Icons) () defun
         rdn_set_window_icons call
     end
 
@@ -377,6 +379,38 @@ RdnRaylib module
 
     end-mode-3d () () defun
         rdn_end_mode_3d call
+    end
+
+    begin-texture-mode (RdnRaylib::RlTypes::RenderTexture2D) () defun
+        rdn_begin_texture_mode call
+    end
+
+    end-texture-mode () () defun
+        rdn_end_texture_mode call
+    end
+
+    begin-shader-mode (RdnRaylib::RlTypes::Shader) () defun
+        rdn_begin_shader_mode call
+    end
+
+    end-shader-mode () () defun
+        rdn_end_shader_mode call
+    end
+
+    begin-blend-mode (Int) () defun
+        rdn_begin_shader_mode call
+    end
+
+    end-blend-mode () () defun
+        rdn_end_shader_mode call
+    end
+
+    begin-scissor-mode (Int Int Int Int) () defun
+        rdn_begin_shader_mode call
+    end
+
+    end-scissor-mode () () defun
+        rdn_end_shader_mode call
     end
 
 end
