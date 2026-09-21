@@ -346,6 +346,22 @@ Image rdn_list_to_image(Value* value , bool* ok) {
     return image;
 }
 
+bool rdn_shader_to_list(RDNApi* api, Shader shader) {
+    bool ok = true;
+
+    ok = api->push_list(api);
+
+    ok = api->push_integer(api,shader.id);
+    ok = api->list_append(api,-2,-1);
+    ok = api->pop(api,1);
+
+    ok = api->push_integer(api, (long)(uintptr_t)shader.locs);
+    ok = api->list_append(api,-2,-1);
+    ok = api->pop(api,1);
+
+    return ok;
+}
+
 Shader rdn_list_to_shader(Value* value, bool* ok) {
     Shader shader = {0};
     RDNValueList l = value->as.list;
@@ -1395,6 +1411,60 @@ RDN_SIG(rdn_unload_vrstereoconfig) {
     return true;
 }
 
+RDN_SIG(rdn_load_shader) {
+    if (api->stack_size(api) < 2) {
+        return false;
+    }
+    const char* fsFileName = api->to_string(api, -1);
+    if (fsFileName == NULL) {
+        return false;
+    }
+    const char* vsFileName = api->to_string(api, -2);
+    if (vsFileName == NULL) {
+        return false;
+    }
+    Shader shader = LoadShader(vsFileName, fsFileName);
+    return rdn_shader_to_list(api, shader);
+}
+
+RDN_SIG(rdn_load_shader_from_memory) {
+    if (api->stack_size(api) < 2) {
+        return false;
+    }
+    const char* fsFileName = api->to_string(api, -1);
+    if (fsFileName == NULL) {
+        return false;
+    }
+    const char* vsFileName = api->to_string(api, -2);
+    if (vsFileName == NULL) {
+        return false;
+    }
+
+    Shader shader = LoadShaderFromMemory(vsFileName, fsFileName);
+    
+    return api->pop(api,2) && rdn_shader_to_list(api, shader);
+}
+
+RDN_SIG(rdn_is_shader_valid) {
+    if(api->stack_size(api) < 1) {
+        return false;
+    }
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST) {
+        return false;
+    }
+
+    bool ok = true;
+
+    Shader shader = rdn_list_to_shader(value, &ok);
+    if (!ok) {
+        return false;
+    }
+
+    return api->push_boolean(api, IsShaderValid(shader));
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -1478,6 +1548,9 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_end_vr_stereo_mode),
     REG_FUNC(rdn_load_vrstereoconfig),
     REG_FUNC(rdn_unload_vrstereoconfig),
+    REG_FUNC(rdn_load_shader),
+    REG_FUNC(rdn_load_shader_from_memory),
+    REG_FUNC(rdn_is_shader_valid),
 };
 
 bool rdn_module_init(RDNModule *module) {

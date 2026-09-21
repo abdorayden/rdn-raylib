@@ -424,7 +424,7 @@ RdnRaylib module
         rdn_end_shader_mode call
     end
 
-    load_vrstereoconfig (RdnRaylib::RlTypes::VrDeviceInfo) (RdnRaylib::RlTypes::VrStereoConfig) defun
+    load-vrstereoconfig (RdnRaylib::RlTypes::VrDeviceInfo) (RdnRaylib::RlTypes::VrStereoConfig) defun
         rdn_load_vrstereoconfig call
     end
 
@@ -432,5 +432,16 @@ RdnRaylib module
         rdn_unload_vrstereoconfig call
     end
 
+    rdn-load-shader (Str Str) (RdnRaylib::RlTypes::Shader) defun
+        rdn_load_shader call
+    end
+
+    rdn-load-shader-from-memory (Str Str) (RdnRaylib::RlTypes::Shader) defun
+        rdn_load_shader_from_memory call
+    end
+
+    rdn-is-shader-valid (RdnRaylib::RlTypes::Shader) (Bool) defun
+        rdn_is_shader_valid call
+    end
 
 end
