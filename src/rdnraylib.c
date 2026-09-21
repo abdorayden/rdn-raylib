@@ -1465,6 +1465,48 @@ RDN_SIG(rdn_is_shader_valid) {
     return api->push_boolean(api, IsShaderValid(shader));
 }
 
+RDN_SIG(rdn_get_shader_location) {
+    if (api->stack_size(api) < 2) {
+        return false;
+    }
+    const char *uniformName = api->to_string(api, -1);
+    if (uniformName == NULL) {
+        return false;
+    }
+    bool ok = api->pop(api,1);
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST || !ok) {
+        return false;
+    }
+    Shader shader = rdn_list_to_shader(value, &ok);
+    if (!ok) {
+        return false;
+    }
+    return api->push_integer(api,GetShaderLocation(shader , uniformName));
+}
+
+RDN_SIG(rdn_get_shader_location_attrib) {
+    if (api->stack_size(api) < 2) {
+        return false;
+    }
+    const char *attribName = api->to_string(api, -1);
+    if (attribName == NULL) {
+        return false;
+    }
+    bool ok = api->pop(api,1);
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST || !ok) {
+        return false;
+    }
+    Shader shader = rdn_list_to_shader(value, &ok);
+    if (!ok) {
+        return false;
+    }
+    return api->push_integer(api,GetShaderLocationAttrib(shader , attribName));
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -1551,6 +1593,8 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_load_shader),
     REG_FUNC(rdn_load_shader_from_memory),
     REG_FUNC(rdn_is_shader_valid),
+    REG_FUNC(rdn_get_shader_location),
+    REG_FUNC(rdn_get_shader_location_attrib),
 };
 
 bool rdn_module_init(RDNModule *module) {

@@ -444,4 +444,11 @@ RdnRaylib module
         rdn_is_shader_valid call
     end
 
+    rdn-get-shader-location (RdnRaylib::RlTypes::Shader Str) (Int) defun
+        rdn_get_shader_location call
+    end
+
+    rdn-get-shader-location-attrib (RdnRaylib::RlTypes::Shader Str) (Int) defun
+        rdn_get_shader_location_attrib call
+    end
 end
