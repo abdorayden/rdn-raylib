@@ -70,6 +70,7 @@ RdnRaylib module
         List Icon const
         List Icons const
         List VrStereoConfig const
+        List VrDeviceInfo const
 
     end
 
@@ -422,5 +423,14 @@ RdnRaylib module
     end-vr-stereo-mode () () defun
         rdn_end_shader_mode call
     end
+
+    load_vrstereoconfig (RdnRaylib::RlTypes::VrDeviceInfo) (RdnRaylib::RlTypes::VrStereoConfig) defun
+        rdn_load_vrstereoconfig call
+    end
+
+    rdn-unload-vrstereoconfig (RdnRaylib::RlTypes::VrStereoConfig) () defun
+        rdn_unload_vrstereoconfig call
+    end
+
 
 end

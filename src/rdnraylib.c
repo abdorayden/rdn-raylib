@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <rdn.h>
+#include <rdn_native.h>
 #include <stddef.h>
 #include <stdint.h>
 #include "./raylib-6.0_linux_amd64/include/raylib.h"
@@ -40,6 +41,202 @@ Matrix rdn_list_to_matrix(Value* value , bool* ok) {
     CONCAT_MAT(15);
 
     return matrix;
+}
+
+#define MAT_ADD(n) \
+    ok &= api->push_number(api, (n));\
+    ok &= api->list_append(api,-2,-1);\
+    ok &= api->pop(api,1);
+
+
+bool rdn_matrix_to_list(RDNApi* api, Matrix matrix) {
+    bool ok = true;
+    api->push_list(api);
+    MAT_ADD(matrix.m0); MAT_ADD(matrix.m1); MAT_ADD(matrix.m2); MAT_ADD(matrix.m3);
+    MAT_ADD(matrix.m4); MAT_ADD(matrix.m5); MAT_ADD(matrix.m6); MAT_ADD(matrix.m7);
+    MAT_ADD(matrix.m8); MAT_ADD(matrix.m9); MAT_ADD(matrix.m10); MAT_ADD(matrix.m11);
+    MAT_ADD(matrix.m12); MAT_ADD(matrix.m13); MAT_ADD(matrix.m14); MAT_ADD(matrix.m15);
+    return ok;
+}
+
+bool rdn_vrstereoconfig_to_list(RDNApi* api, VrStereoConfig vrstereoconfig) {
+    bool ok = true;
+    api->push_list(api);
+
+    // matrix[] = (
+    // () -> rdn_matrix_to_list(api, vrstereoconfig.projection[0]);
+    // () -> rdn_matrix_to_list(api, vrstereoconfig.projection[1]);
+    // )
+    api->push_list(api);
+
+    ok = rdn_matrix_to_list(api, vrstereoconfig.projection[0]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    ok = rdn_matrix_to_list(api, vrstereoconfig.projection[1]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    // matrix[] = (
+    // () -> rdn_matrix_to_list(api, vrstereoconfig.viewOffset[0]);
+    // () -> rdn_matrix_to_list(api, vrstereoconfig.viewOffset[1]);
+    // )
+    api->push_list(api);
+
+    ok = rdn_matrix_to_list(api, vrstereoconfig.viewOffset[0]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    ok = rdn_matrix_to_list(api, vrstereoconfig.viewOffset[1]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    // float[] = () -> leftLensCenter
+    api->push_list(api);
+    api->push_number(api, vrstereoconfig.leftLensCenter[0]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    api->push_number(api, vrstereoconfig.leftLensCenter[1]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    // float[] = () -> rightLensCenter
+    api->push_list(api);
+    api->push_number(api, vrstereoconfig.rightLensCenter[0]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    api->push_number(api, vrstereoconfig.rightLensCenter[1]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    // float[] = () -> leftScreenCenter
+    api->push_list(api);
+    api->push_number(api, vrstereoconfig.leftScreenCenter[0]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    api->push_number(api, vrstereoconfig.leftScreenCenter[1]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    // float[] = () -> rightScreenCenter
+    api->push_list(api);
+    api->push_number(api, vrstereoconfig.rightScreenCenter[0]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    api->push_number(api, vrstereoconfig.rightScreenCenter[1]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    // float[] = () -> scale
+    api->push_list(api);
+    api->push_number(api, vrstereoconfig.scale[0]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    api->push_number(api, vrstereoconfig.scale[1]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    // float[] = () -> scaleIn
+    api->push_list(api);
+    api->push_number(api, vrstereoconfig.scaleIn[0]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    api->push_number(api, vrstereoconfig.scaleIn[1]);
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+    ok &= api->list_append(api,-2,-1);
+    ok &= api->pop(api,1);
+
+
+    return ok;
+}
+
+VrDeviceInfo rdn_list_to_vrdeviceinfo(Value* value , bool* ok) {
+    VrDeviceInfo vrdeviceinfo = {0};
+    RDNValueList l = value->as.list;
+
+    if (
+            l.count != 9
+
+            && l.items[0]->type != VALUE_INTEGER
+            && l.items[1]->type != VALUE_INTEGER
+
+            && l.items[2]->type != VALUE_DOUBLE
+            && l.items[3]->type != VALUE_DOUBLE
+            && l.items[4]->type != VALUE_DOUBLE
+            && l.items[5]->type != VALUE_DOUBLE
+            && l.items[6]->type != VALUE_DOUBLE
+
+
+            && l.items[7]->type != VALUE_LIST
+            && l.items[7]->as.list.count != 4
+            && l.items[7]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[7]->as.list.items[1]->type != VALUE_DOUBLE
+            && l.items[7]->as.list.items[2]->type != VALUE_DOUBLE
+            && l.items[7]->as.list.items[3]->type != VALUE_DOUBLE
+
+            && l.items[8]->type != VALUE_LIST
+            && l.items[8]->as.list.count != 4
+            && l.items[8]->as.list.items[0]->type != VALUE_DOUBLE
+            && l.items[8]->as.list.items[1]->type != VALUE_DOUBLE
+            && l.items[8]->as.list.items[2]->type != VALUE_DOUBLE
+            && l.items[8]->as.list.items[3]->type != VALUE_DOUBLE
+
+       ) 
+    {
+        *ok = false;
+        return vrdeviceinfo;
+    }
+
+    vrdeviceinfo.hResolution = l.items[0]->as.integer;
+    vrdeviceinfo.vResolution = l.items[1]->as.integer;
+
+    vrdeviceinfo.hScreenSize = l.items[2]->as.number;
+    vrdeviceinfo.vScreenSize = l.items[3]->as.integer;
+
+    vrdeviceinfo.eyeToScreenDistance = l.items[4]->as.number;
+    vrdeviceinfo.lensSeparationDistance = l.items[5]->as.integer;
+    vrdeviceinfo.interpupillaryDistance = l.items[6]->as.integer;
+
+    vrdeviceinfo.lensDistortionValues[0] = l.items[7]->as.list.items[0]->as.number;
+    vrdeviceinfo.lensDistortionValues[1] = l.items[7]->as.list.items[1]->as.number;
+    vrdeviceinfo.lensDistortionValues[2] = l.items[7]->as.list.items[2]->as.number;
+    vrdeviceinfo.lensDistortionValues[3] = l.items[7]->as.list.items[3]->as.number;
+
+    vrdeviceinfo.chromaAbCorrection[0] = l.items[8]->as.list.items[0]->as.number;
+    vrdeviceinfo.chromaAbCorrection[1] = l.items[8]->as.list.items[1]->as.number;
+    vrdeviceinfo.chromaAbCorrection[2] = l.items[8]->as.list.items[2]->as.number;
+    vrdeviceinfo.chromaAbCorrection[3] = l.items[8]->as.list.items[3]->as.number;
+
+    return vrdeviceinfo;
 }
 
 VrStereoConfig rdn_list_to_vrstereoconfig(Value* value , bool* ok) {
@@ -1154,6 +1351,50 @@ RDN_SIG(rdn_end_vr_stereo_mode) {
     return true;
 }
 
+RDN_SIG(rdn_load_vrstereoconfig) {
+    bool ok = true;
+    VrDeviceInfo device = {0};
+
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST) {
+        return false;
+    }
+
+    device = rdn_list_to_vrdeviceinfo(value,&ok);
+    if (!ok) {
+        return false;
+    }
+
+    VrStereoConfig vrstereoconfig = LoadVrStereoConfig(device);
+    ok = rdn_vrstereoconfig_to_list(api,vrstereoconfig);
+    return ok;
+}
+
+RDN_SIG(rdn_unload_vrstereoconfig) {
+    VrStereoConfig config = {0};
+
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* value = rdn_pop_value(state);
+    if(value->type != VALUE_LIST) {
+        return false;
+    }
+
+    bool ok = true;
+
+    config = rdn_list_to_vrstereoconfig(value, &ok);
+    UnloadVrStereoConfig(config);
+    return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -1235,6 +1476,8 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_end_scissor_mode),
     REG_FUNC(rdn_begin_vr_stereo_mode),
     REG_FUNC(rdn_end_vr_stereo_mode),
+    REG_FUNC(rdn_load_vrstereoconfig),
+    REG_FUNC(rdn_unload_vrstereoconfig),
 };
 
 bool rdn_module_init(RDNModule *module) {
