@@ -1507,6 +1507,129 @@ RDN_SIG(rdn_get_shader_location_attrib) {
     return api->push_integer(api,GetShaderLocationAttrib(shader , attribName));
 }
 
+
+RDN_SIG(rdn_set_shader_value) {
+    if (api->stack_size(api) < 4) {
+        return false;
+    }
+    bool ok = true;
+    int uniformType;
+    const void *value = NULL;
+    int locIndex;
+    ok &= api->to_integer(api,-1,(long*)&uniformType);
+    ok &= api->to_integer(api,-2,(long*)value);
+    ok &= api->to_integer(api,-3,(long*)&locIndex);
+    ok &= api->pop(api,3);
+    if (!ok)    return false;
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = rdn_pop_value(state);
+    if(val->type != VALUE_LIST || !ok) {
+        return false;
+    }
+    Shader shader = rdn_list_to_shader(val, &ok);
+    if (!ok) {
+        return false;
+    }
+    SetShaderValue(shader, locIndex, value, uniformType);
+    return true;
+}
+
+RDN_SIG(rdn_set_shader_value_v) {
+    if (api->stack_size(api) < 5) {
+        return false;
+    }
+    bool ok = true;
+    int count;
+    int uniformType;
+    const void *value = NULL;
+    int locIndex;
+    ok &= api->to_integer(api,-1,(long*)&count);
+    ok &= api->to_integer(api,-2,(long*)&uniformType);
+    ok &= api->to_integer(api,-3,(long*)value);
+    ok &= api->to_integer(api,-4,(long*)&locIndex);
+    ok &= api->pop(api,4);
+    if (!ok)    return false;
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = rdn_pop_value(state);
+    if(val->type != VALUE_LIST || !ok) {
+        return false;
+    }
+    Shader shader = rdn_list_to_shader(val, &ok);
+    if (!ok) {
+        return false;
+    }
+    SetShaderValueV(shader, locIndex, value, uniformType, count);
+    return true;
+}
+
+RDN_SIG(rdn_set_shader_value_matrix) {
+
+    if (api->stack_size(api) < 3) { return false; }
+
+    Value* val = NULL;
+    bool ok = true;
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    val = rdn_pop_value(state);
+    if(val->type != VALUE_LIST) { return false; }
+
+    Matrix matrix = rdn_list_to_matrix(val , &ok);
+    if (!ok) { return false; }
+
+    int locIndex;
+    ok &= api->to_integer(api,-2,(long*)&locIndex);
+    ok &= api->pop(api,1);
+    if (!ok) { return false; }
+
+    val = rdn_pop_value(state);
+    Shader  shader = rdn_list_to_shader(val, &ok);
+    if (!ok) { return false; }
+
+    SetShaderValueMatrix(shader, locIndex, matrix );
+    return true;
+}
+
+RDN_SIG(rdn_set_shader_value_texture) {
+    if (api->stack_size(api) < 3) { return false; }
+
+    Value* val = NULL;
+    bool ok = true;
+    int locIndex;
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    val = rdn_pop_value(state);
+    if(val->type != VALUE_LIST) { return false; }
+
+    Texture2D texture2d = rdn_list_to_texture(val, &ok);
+    if (!ok) {
+        return false;
+    }
+
+    ok &= api->to_integer(api,-2,(long*)&locIndex);
+    ok &= api->pop(api,1);
+    if (!ok) { return false; }
+
+    val = rdn_pop_value(state);
+    Shader  shader = rdn_list_to_shader(val, &ok);
+    if (!ok) { return false; }
+
+    SetShaderValueTexture(shader, locIndex, texture2d);
+    return true;
+}
+
+RDN_SIG(rdn_unload_shader) {
+
+    if (api->stack_size(api) < 1) { return false; }
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = NULL;
+    bool ok = true;
+
+
+    val = rdn_pop_value(state);
+    Shader  shader = rdn_list_to_shader(val, &ok);
+    if (!ok) { return false; }
+    UnloadShader(shader);
+    return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -1595,6 +1718,11 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_is_shader_valid),
     REG_FUNC(rdn_get_shader_location),
     REG_FUNC(rdn_get_shader_location_attrib),
+    REG_FUNC(rdn_set_shader_value),
+    REG_FUNC(rdn_set_shader_value_v),
+    REG_FUNC(rdn_set_shader_value_matrix),
+    REG_FUNC(rdn_set_shader_value_texture),
+    REG_FUNC(rdn_unload_shader),
 };
 
 bool rdn_module_init(RDNModule *module) {

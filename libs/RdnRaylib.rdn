@@ -71,6 +71,9 @@ RdnRaylib module
         List Icons const
         List VrStereoConfig const
         List VrDeviceInfo const
+        List Matrix const
+        List Texture const
+        List Texture2D const
 
     end
 
@@ -451,4 +454,34 @@ RdnRaylib module
     rdn-get-shader-location-attrib (RdnRaylib::RlTypes::Shader Str) (Int) defun
         rdn_get_shader_location_attrib call
     end
+
+    rdn-set-shader-value (RdnRaylib::RlTypes::Shader 
+                         Int 
+                         RdnRaylib::RlTypes::VoidPtr
+                         Int 
+                         ) () defun
+        rdn_set_shader_value call
+    end
+
+    rdn-set-shader-value-v (RdnRaylib::RlTypes::Shader 
+                         Int 
+                         RdnRaylib::RlTypes::VoidPtr
+                         Int 
+                         Int 
+                         ) () defun
+        rdn_set_shader_value_v call
+    end
+
+    rdn-set-shader-value-matrix (RdnRaylib::RlTypes::Shader Int RdnRaylib::RlTypes::Matrix) () defun
+        rdn_set_shader_value_matrix call
+    end
+
+    rdn-set-shader-value-texture (RdnRaylib::RlTypes::Shader Int RdnRaylib::RlTypes::Texture2D) () defun
+        rdn_set_shader_value_texture call
+    end
+
+    rdn-unload-shader (RdnRaylib::RlTypes::Shader) () defun
+        rdn_unload_shader call
+    end
+
 end
