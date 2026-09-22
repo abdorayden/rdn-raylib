@@ -1,8 +1,8 @@
 #include <assert.h>
 #include <stddef.h>
-
 #include "./helpers.c"
-
+#include "raylib-6.0_linux_amd64/include/raylib.h"
+#include "rdn/include/rdn.h"
 
 RDN_SIG(rdn_init_window) {
   if (api->stack_size(api) < 3) {
@@ -1118,6 +1118,41 @@ RDN_SIG(rdn_unload_shader) {
     return true;
 }
 
+RDN_SIG(rdn_get_screen_to_world_ray) {
+  if (api->stack_size(api) < 2) {
+    return false;
+  }
+  RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+  Value* val = NULL;
+  bool ok = true;
+
+  val = rdn_pop_value(state);
+
+  Camera camera = rdn_list_to_camera3d(val, &ok);
+  if (!ok) {
+    return false;
+  }
+
+  val = rdn_pop_value(state);
+
+  if(val->type != VALUE_LIST
+  && val->as.list.count != 2
+  && val->as.list.items[0]->type != VALUE_DOUBLE
+  && val->as.list.items[1]->type != VALUE_DOUBLE
+  ) {
+    return false;
+  }
+
+  Vector2 position = {0};
+  position.x = (float)val->as.list.items[0]->as.number;
+  position.y = (float)val->as.list.items[1]->as.number;
+
+  Ray ray = GetScreenToWorldRay(position, camera);
+
+  ok = rdn_ray_to_list(api , ray);
+  return ok;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -1211,6 +1246,7 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_set_shader_value_matrix),
     REG_FUNC(rdn_set_shader_value_texture),
     REG_FUNC(rdn_unload_shader),
+    REG_FUNC(rdn_get_screen_to_world_ray),
 };
 
 bool rdn_module_init(RDNModule *module) {

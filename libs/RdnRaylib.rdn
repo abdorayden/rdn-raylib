@@ -73,8 +73,9 @@ RdnRaylib module
         List VrDeviceInfo const
         List Matrix const
         List Texture const
-        List Texture2D const
-
+        RdnRaylib::RlTypes::Texture Texture2D const
+        RdnRaylib::RlTypes::Camera3d Camera const
+        List Ray const
     end
 
     [* private *]
@@ -484,4 +485,10 @@ RdnRaylib module
         rdn_unload_shader call
     end
 
-end
+    rdn-get-screen-to-world-ray (
+                                RdnRaylib::RlTypes::Vector2
+                                RdnRaylib::RlTypes::Camera
+                                ) (RdnRaylib::RlTypes::Ray) defun
+      rdn_get_screen_to_world_ray call
+    end
+  end

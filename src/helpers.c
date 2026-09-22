@@ -509,4 +509,45 @@ Camera2D rdn_list_to_camera2d(Value* value, bool* ok) {
     return cam2d;
 }
 
+bool rdn_ray_to_list(RDNApi* api, Ray ray) {
+  bool ok = true;
+
+  ok &= api->push_list(api);
+
+  ok &= api->push_list(api); // Vector3 position
+
+  ok &= api->push_number(api, ray.position.x);
+  ok &= api->list_append(api,-2,-1);
+  ok &= api->pop(api , 1);
+
+  ok &= api->push_number(api, ray.position.y);
+  ok &= api->list_append(api,-2,-1);
+  ok &= api->pop(api , 1);
+
+  ok &= api->push_number(api, ray.position.z);
+  ok &= api->list_append(api,-2,-1);
+  ok &= api->pop(api , 1);
+
+  ok &= api->list_append(api,-2,-1); // position to Ray
+  ok &= api->pop(api , 1);
+
+  ok &= api->push_list(api); // Vector3 direction
+
+  ok &= api->push_number(api, ray.direction .x);
+  ok &= api->list_append(api,-2,-1);
+  ok &= api->pop(api , 1);
+
+  ok &= api->push_number(api, ray.direction .y);
+  ok &= api->list_append(api,-2,-1);
+  ok &= api->pop(api , 1);
+
+  ok &= api->push_number(api, ray.direction .z);
+  ok &= api->list_append(api,-2,-1);
+  ok &= api->pop(api , 1);
+
+  ok &= api->list_append(api,-2,-1); // direction to Ray
+  ok &= api->pop(api , 1);
+  return ok;
+}
+
 #endif // !HELPERS
