@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <rdn.h>
 #include <stddef.h>
 #include "./helpers.c"
 #include "raylib-6.0_linux_amd64/include/raylib.h"
@@ -1153,6 +1154,324 @@ RDN_SIG(rdn_get_screen_to_world_ray) {
   return ok;
 }
 
+RDN_SIG(rdn_get_screen_to_world_ray_ex) {
+    if (api->stack_size(api) < 4) {
+        return false;
+    }
+
+    long width = 0;
+    long height = 0;
+    Camera camera = {0};
+    Vector2 position = {0};
+    bool ok = true;
+
+    ok &= api->to_integer(api , -1 , &height);
+    ok &= api->to_integer(api , -2 , &width);
+
+    ok &= api->pop(api,2);
+
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = NULL;
+
+    val = rdn_pop_value(state);
+
+    camera = rdn_list_to_camera3d(val, &ok);
+    if (!ok) {
+        return false;
+    }
+
+    val = rdn_pop_value(state);
+
+    if(val->type != VALUE_LIST
+            && val->as.list.count != 2
+            && val->as.list.items[0]->type != VALUE_DOUBLE
+            && val->as.list.items[1]->type != VALUE_DOUBLE
+      ) {
+        return false;
+    }
+
+    position.x = (float)val->as.list.items[0]->as.number;
+    position.y = (float)val->as.list.items[1]->as.number;
+
+    Ray ray = GetScreenToWorldRayEx(position, camera,width,height);
+
+    ok = rdn_ray_to_list(api , ray);
+    return ok;
+
+    return true;
+}
+
+RDN_SIG(ray_get_world_to_screen) {
+    if(api->stack_size(api) < 2) {
+        return false;
+    }
+
+    bool ok = true;
+    Camera camera = {0};
+    Vector3 position = {0};
+
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = NULL;
+
+    val = rdn_pop_value(state);
+
+    camera = rdn_list_to_camera3d(val, &ok);
+    if (!ok) {
+        return false;
+    }
+
+    val = rdn_pop_value(state);
+
+    if(
+            val->type != VALUE_LIST
+            && val->as.list.count != 3
+            && val->as.list.items[0]->type != VALUE_DOUBLE
+            && val->as.list.items[1]->type != VALUE_DOUBLE
+            && val->as.list.items[2]->type != VALUE_DOUBLE
+            ) {
+        return false;
+    }
+
+    position.x = (float)val->as.list.items[0]->as.number;
+    position.y = (float)val->as.list.items[1]->as.number;
+    position.z = (float)val->as.list.items[2]->as.number;
+
+    Vector2 vec2 = GetWorldToScreen(position,camera);
+
+    ok &= api->push_list(api);
+    ok &= api->push_number(api,vec2.x);
+    ok &= api->list_append(api , -2 , -1);
+    ok &= api->pop(api ,1);
+
+    ok &= api->push_number(api,vec2.y);
+    ok &= api->list_append(api , -2 , -1);
+    ok &= api->pop(api ,1);
+    return true;
+}
+
+RDN_SIG(ray_get_world_to_screen_ex) {
+    if(api->stack_size(api) < 4) {
+        return false;
+    }
+
+    bool ok = true;
+    Camera camera = {0};
+    Vector3 position = {0};
+
+    long width = 0;
+    long height = 0;
+
+    ok &= api->to_integer(api,-1 , &height);
+    ok &= api->to_integer(api,-2 , &width);
+    ok &= api->pop(api,2);
+
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = NULL;
+
+    val = rdn_pop_value(state);
+
+    camera = rdn_list_to_camera3d(val, &ok);
+    if (!ok) {
+        return false;
+    }
+
+    val = rdn_pop_value(state);
+
+    if(
+            val->type != VALUE_LIST
+            && val->as.list.count != 3
+            && val->as.list.items[0]->type != VALUE_DOUBLE
+            && val->as.list.items[1]->type != VALUE_DOUBLE
+            && val->as.list.items[2]->type != VALUE_DOUBLE
+            ) {
+        return false;
+    }
+
+    position.x = (float)val->as.list.items[0]->as.number;
+    position.y = (float)val->as.list.items[1]->as.number;
+    position.z = (float)val->as.list.items[2]->as.number;
+
+    Vector2 vec2 = GetWorldToScreenEx(position,camera,width,height);
+
+    ok &= api->push_list(api);
+    ok &= api->push_number(api,vec2.x);
+    ok &= api->list_append(api , -2 , -1);
+    ok &= api->pop(api ,1);
+
+    ok &= api->push_number(api,vec2.y);
+    ok &= api->list_append(api , -2 , -1);
+    ok &= api->pop(api ,1);
+    return ok;
+}
+
+RDN_SIG(ray_get_world_to_screen_2d) {
+
+    if (api->stack_size(api) < 2) {
+        return false;
+    }
+
+    Camera2D camera = {0};
+    Vector2 position = {0};
+    bool ok = true;
+
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = NULL;
+
+    val = rdn_pop_value(state);
+
+    camera = rdn_list_to_camera2d(val, &ok);
+    if(!ok) {
+        return false;
+    }
+
+    val = rdn_pop_value(state);
+
+    if(
+            val->type != VALUE_LIST
+            && val->as.list.count != 2
+            && val->as.list.items[0]->type != VALUE_DOUBLE
+            && val->as.list.items[1]->type != VALUE_DOUBLE
+            ) {
+        return false;
+    }
+
+    position.x = (float)val->as.list.items[0]->as.number;
+    position.y = (float)val->as.list.items[1]->as.number;
+
+    Vector2 res = GetWorldToScreen2D(position, camera);
+    ok &= api->push_list(api);
+    ok &= api->push_number(api,res.x);
+    ok &= api->list_append(api , -2 , -1);
+    ok &= api->pop(api ,1);
+
+    ok &= api->push_number(api,res.y);
+    ok &= api->list_append(api , -2 , -1);
+    ok &= api->pop(api ,1);
+    return ok;
+}
+
+RDN_SIG(ray_get_screen_to_world_2d) {
+
+    if (api->stack_size(api) < 2) {
+        return false;
+    }
+
+    Camera2D camera = {0};
+    Vector2 position = {0};
+    bool ok = true;
+
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = NULL;
+
+    val = rdn_pop_value(state);
+
+    camera = rdn_list_to_camera2d(val, &ok);
+    if(!ok) {
+        return false;
+    }
+
+    val = rdn_pop_value(state);
+
+    if(
+            val->type != VALUE_LIST
+            && val->as.list.count != 2
+            && val->as.list.items[0]->type != VALUE_DOUBLE
+            && val->as.list.items[1]->type != VALUE_DOUBLE
+            ) {
+        return false;
+    }
+
+    position.x = (float)val->as.list.items[0]->as.number;
+    position.y = (float)val->as.list.items[1]->as.number;
+
+    Vector2 res = GetScreenToWorld2D(position, camera);
+    ok &= api->push_list(api);
+    ok &= api->push_number(api,res.x);
+    ok &= api->list_append(api , -2 , -1);
+    ok &= api->pop(api ,1);
+
+    ok &= api->push_number(api,res.y);
+    ok &= api->list_append(api , -2 , -1);
+    ok &= api->pop(api ,1);
+    return ok;
+}
+
+RDN_SIG(rdn_get_camera_matrix) {
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+    Camera camera = {0};
+    bool ok = true;
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = NULL;
+
+    val = rdn_pop_value(state);
+
+    camera = rdn_list_to_camera3d(val, &ok);
+    if(!ok) {
+        return false;
+    }
+
+    return rdn_matrix_to_list(api, GetCameraMatrix(camera));
+}
+
+RDN_SIG(rdn_get_camera_matrix_2d) {
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+    Camera2D camera = {0};
+    bool ok = true;
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = NULL;
+
+    val = rdn_pop_value(state);
+
+    camera = rdn_list_to_camera2d(val, &ok);
+    if(!ok) {
+        return false;
+    }
+
+    return rdn_matrix_to_list(api, GetCameraMatrix2D(camera));
+}
+
+RDN_SIG(rdn_get_frame_time) {
+    return api->push_number(api , GetFrameTime());
+}
+
+RDN_SIG(rdn_get_time) {
+    return api->push_number(api , GetTime());
+}
+
+RDN_SIG(rdn_get_fps) {
+    return api->push_integer(api , GetFPS());
+}
+
+RDN_SIG(rdn_swap_screen_buffer) {
+    SwapScreenBuffer();
+    return true;
+}
+
+RDN_SIG(rdn_poll_inpus_events) {
+    PollInputEvents();
+    return true;
+}
+
+RDN_SIG(rdn_wait_time){
+
+    if(api->stack_size(api) < 1) {
+        return false;
+    }
+
+    double seconds = 0;
+
+    if (!api->to_number(api, -1 , &seconds)) {
+        return false;
+    }
+
+    WaitTime(seconds);
+    return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -1247,6 +1566,20 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_set_shader_value_texture),
     REG_FUNC(rdn_unload_shader),
     REG_FUNC(rdn_get_screen_to_world_ray),
+    REG_FUNC(rdn_get_screen_to_world_ray_ex),
+    REG_FUNC(ray_get_world_to_screen),
+    REG_FUNC(ray_get_world_to_screen_ex),
+    REG_FUNC(ray_get_world_to_screen_2d),
+    REG_FUNC(ray_get_screen_to_world_2d),
+    REG_FUNC(rdn_get_camera_matrix),
+    REG_FUNC(rdn_get_camera_matrix_2d),
+    REG_FUNC(rdn_get_frame_time),
+    REG_FUNC(rdn_get_time),
+    REG_FUNC(rdn_get_fps),
+    REG_FUNC(rdn_swap_screen_buffer),
+    REG_FUNC(rdn_poll_inpus_events),
+    REG_FUNC(rdn_wait_time),
+
 };
 
 bool rdn_module_init(RDNModule *module) {

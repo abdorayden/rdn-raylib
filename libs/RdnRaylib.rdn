@@ -63,6 +63,7 @@ RdnRaylib module
         Int ConfigFlag const
         Int VoidPtr const
         List Vector2 const
+        List Vector3 const
         List Camera2d const
         List Camera3d const
         List RenderTexture2D const
@@ -491,4 +492,78 @@ RdnRaylib module
                                 ) (RdnRaylib::RlTypes::Ray) defun
       rdn_get_screen_to_world_ray call
     end
+
+    rdn-get-screen-to-world-ray-ex (
+                                RdnRaylib::RlTypes::Vector2
+                                RdnRaylib::RlTypes::Camera
+                                   Int
+                                   Int
+
+                                   ) (RdnRaylib::RlTypes::Ray) defun
+        rdn_get_screen_to_world_ray_ex call
+    end
+
+    ray-get-world-to-screen (
+                                RdnRaylib::RlTypes::Vector3
+                                RdnRaylib::RlTypes::Camera
+
+                            ) (RdnRaylib::RlTypes::Vector2) defun
+        ray_get_world_to_screen call
+    end
+
+    ray-get-world-to-screen-ex (
+                                RdnRaylib::RlTypes::Vector3
+                                RdnRaylib::RlTypes::Camera
+                                Int
+                                Int
+                            ) (RdnRaylib::RlTypes::Vector2) defun
+        ray_get_world_to_screen_ex call
+    end
+
+    ray-get-world-to-screen-2d (
+                               RdnRaylib::RlTypes::Vector2
+                               RdnRaylib::RlTypes::Camera2d
+                               ) (RdnRaylib::RlTypes::Vector2) defun
+        ray_get_world_to_screen_2d call
+    end
+
+    ray-get-screen-to-world-2d (
+                               RdnRaylib::RlTypes::Vector2
+                               RdnRaylib::RlTypes::Camera2d
+                               ) (RdnRaylib::RlTypes::Vector2) defun
+        ray_get_screen_to_world_2d call
+    end
+
+    rdn-get-camera-matrix (RdnRaylib::RlTypes::Camera) (RdnRaylib::RlTypes::Matrix) defun
+        rdn_get_camera_matrix call
+    end
+
+    rdn-get-camera-matrix-2d (RdnRaylib::RlTypes::Camera2D) (RdnRaylib::RlTypes::Matrix) defun
+        rdn_get_camera_matrix_2d call
+    end
+
+    rdn-get-frame-time () (Real) defun
+        rdn_get_frame_time call
+    end
+
+    rdn-get-time () (Real) defun
+        rdn_get_time call
+    end
+
+    rdn-get-fps () (Int) defun
+        rdn_get_fps call
+    end
+
+    rdn-swap-screen-buffer () () defun
+        rdn_swap_screen_buffer call
+    end
+
+    rdn-poll-inpus-events () () defun
+        rdn_poll_inpus_events call
+    end
+
+    rdn-wait-time (Real) () defun
+        rdn_wait_time call
+    end
+
   end
