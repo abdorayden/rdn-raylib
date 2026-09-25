@@ -496,6 +496,16 @@ RdnRaylib module
       rdn_get_screen_to_world_ray call
     end
 
+    get-mouse-ray (
+                                RdnRaylib::RlTypes::Vector2
+                                RdnRaylib::RlTypes::Camera
+                                ) (RdnRaylib::RlTypes::Ray) defun
+        [*
+        *  Compatibility hack for previous raylib versions
+        * *]
+      rdn_get_screen_to_world_ray call
+    end
+
     get-screen-to-world-ray-ex (
                                 RdnRaylib::RlTypes::Vector2
                                 RdnRaylib::RlTypes::Camera
