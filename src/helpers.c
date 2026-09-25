@@ -17,6 +17,15 @@
     ok &= api->list_append(api,-2,-1);\
     ok &= api->pop(api,1);
 
+bool check_stack(RDNApi* api, int val) {
+    return api->stack_size(api) < val;
+}
+
+#define CHECK(i) \
+    if (!check_stack(api,(i))) {\
+        return false;\
+    }
+
 Matrix rdn_list_to_matrix(Value* value , bool* ok) {
     Matrix matrix = {0};
     RDNValueList l = value->as.list;

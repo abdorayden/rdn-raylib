@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <rdn.h>
 #include <stddef.h>
+#include <stdint.h>
 #include "./helpers.c"
 #include "raylib-6.0_linux_amd64/include/raylib.h"
 #include "rdn/include/rdn.h"
@@ -1472,6 +1473,187 @@ RDN_SIG(rdn_wait_time){
     return true;
 }
 
+RDN_SIG(rdn_set_random_seed) {
+    if (api->stack_size(api) < 1) {
+        return false;
+    }
+
+    long seed = 0;
+
+    if (!api->to_integer(api, -1, &seed)) {
+        return false;
+    }
+    SetRandomSeed((unsigned int)seed);
+    return true;
+}
+
+RDN_SIG(rdn_get_random_value) {
+
+    if (api->stack_size(api) < 2) {
+        return false;
+    }
+
+    long min = 0;
+    long max = 0;
+    bool ok = true;
+
+    ok &= api->to_integer(api,-1,&max);
+    ok &= api->to_integer(api,-2,&min);
+
+    if (!ok) {
+        return false;
+    }
+
+    return api->push_integer(api,GetRandomValue((int) min, (int) max));
+}
+
+RDN_SIG(rdn_load_random_sequence){
+    if(!check_stack(api,3)) {
+        return false;
+    }
+
+    long min = 0;
+    long max = 0;
+    long count = 0;
+    bool ok = true;
+
+    ok &= api->to_integer(api,-1,&max);
+    ok &= api->to_integer(api,-2,&min);
+    ok &= api->to_integer(api,-3,&count);
+    ok &= api->pop(api,3);
+
+    if (!ok) {
+        return false;
+    }
+
+    return api->push_integer(api,(uintptr_t)LoadRandomSequence((unsigned int) count, (int) min, (int) max));
+}
+
+RDN_SIG(rdn_unload_random_sequence){
+    if(!check_stack(api, 1)){
+        return false;
+    }
+
+    long sequence = 0;
+
+    if(!api->to_integer(api,-1,&sequence)) {
+        return false;
+    }
+    UnloadRandomSequence((int*)sequence);
+    return true;
+}
+
+RDN_SIG(rdn_take_screen_shot) {
+    CHECK(1)
+
+    TakeScreenshot(api->to_string(api,-1));
+    return true;
+}
+
+RDN_SIG(rdn_set_config_flag) {
+    CHECK(1)
+
+    long flags = 0;
+    if(!api->to_integer(api,-1,&flags)) {
+        return false;
+    }
+    SetConfigFlags((unsigned int) flags);
+    return true;
+}
+
+RDN_SIG(rdn_open_url) {
+    CHECK(1)
+    OpenURL(api->to_string(api,-1));
+    api->pop(api,1);
+    return true;
+}
+
+RDN_SIG(rdn_set_trace_log_level) {
+    CHECK(1)
+
+    long logLevel = 0;
+
+    if (!api->to_integer(api,-1,&logLevel)) {
+        return false;
+    }
+    api->pop(api,1);
+    SetTraceLogLevel((int)logLevel);
+    return true;
+}
+
+static Value* stack_with_callback = NULL;
+
+RDN_SIG(rdn_trace_log) {
+    CHECK(2)
+    if(stack_with_callback == NULL) {
+        const char* text = api->to_string(api,-1);
+        long logLevel = 0;
+
+        if (!api->to_integer(api,-2,&logLevel)) {
+            return false;
+        }
+        api->pop(api,2);
+        // you should use @fmt from rdn runtime
+        TraceLog((int)logLevel, "%s", text);
+        return true;
+    }
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    rdn_push_value(state, stack_with_callback);
+    api->call_function(api);
+    return true;
+}
+
+RDN_SIG(rdn_set_trace_log_callback) {
+    // calling this function i will push the rdn function
+    // and rdn_trace_log will use it if the flag set it to true
+    CHECK(1)
+    if(!api->is_function(api,-1))   return false;
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    stack_with_callback = rdn_pop_value(state);
+    return true;
+}
+
+RDN_SIG(rdn_mem_alloc) {
+
+    CHECK(1)
+    long size = 0;
+
+    if (!api->to_integer(api,-1,&size)) {
+        return false;
+    }
+    void *mem = MemAlloc((unsigned int)size);
+
+    return api->push_integer(api,(uintptr_t)mem);
+}
+
+RDN_SIG(rdn_mem_realloc) {
+    CHECK(2)
+    long size = 0;
+    void* mem = NULL;
+
+    if (!api->to_integer(api,-1,&size)) {
+        return false;
+    }
+
+    if (!api->to_integer(api,-2,mem)) {
+        return false;
+    }
+
+    return api->push_integer(api,(uintptr_t)MemRealloc(mem, (unsigned int)size));
+}
+
+RDN_SIG(rdn_mem_free) {
+    CHECK(1)
+    void* mem = NULL;
+
+    if (!api->to_integer(api,-1,mem)) {
+        return false;
+    }
+    MemFree(mem);
+
+    return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -1580,6 +1762,20 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_poll_inpus_events),
     REG_FUNC(rdn_wait_time),
 
+    REG_FUNC(rdn_set_random_seed),
+    REG_FUNC(rdn_get_random_value),
+    REG_FUNC(rdn_load_random_sequence),
+    REG_FUNC(rdn_unload_random_sequence),
+    REG_FUNC(rdn_take_screen_shot),
+    REG_FUNC(rdn_set_config_flag),
+    REG_FUNC(rdn_open_url),
+    REG_FUNC(rdn_set_trace_log_level),
+    REG_FUNC(rdn_trace_log),
+    REG_FUNC(rdn_set_trace_log_callback),
+    REG_FUNC(rdn_mem_alloc),
+    REG_FUNC(rdn_mem_realloc),
+
+    REG_FUNC(rdn_mem_free),
 };
 
 bool rdn_module_init(RDNModule *module) {

@@ -77,6 +77,9 @@ RdnRaylib module
         RdnRaylib::RlTypes::Texture Texture2D const
         RdnRaylib::RlTypes::Camera3d Camera const
         List Ray const
+        Int Uint const
+        Int IntPtr const
+        Func LogCallback const
     end
 
     [* private *]
@@ -564,6 +567,58 @@ RdnRaylib module
 
     wait-time (Real) () defun
         rdn_wait_time call
+    end
+
+    set-random-seed (RdnRaylib::RlTypes::Uint) () defun
+        rdn_set_random_seed call
+    end
+
+    get-random-value (Int Int) (Int) defun
+        rdn_get_random_value call
+    end
+
+    load-random-sequence (Int Int Int) (RdnRaylib::RlTypes::IntPtr) defun
+        rdn_load_random_sequence call
+    end
+
+    unload-random-sequence (RdnRaylib::RlTypes::IntPtr) () defun
+        rdn_unload_random_sequence call
+    end
+
+    take-screen-shot (Str) () defun
+        rdn_take_screen_shot call
+    end
+
+    set-config-flag (Int [*flag*]) () defun
+        rdn_set_config_flag call
+    end
+
+    open-url (Str) () defun
+        rdn_open_url call
+    end
+    
+    set-trace-log-level (Int [*log*]) () defun
+        rdn_set_trace_log_level call
+    end
+
+    trace-log (Int [*log level*] Str) () defun
+        rdn_trace_log call
+    end
+
+    set-trace-log-callback (RdnRaylib::RlTypes::LogCallback) () defun
+        rdn_set_trace_log_callback call
+    end
+
+    mem-alloc (Int [*size*]) (RdnRaylib::RlTypes::VoidPtr) defun
+        rdn_mem_alloc call
+    end
+
+    mem-realloc (RdnRaylib::RlTypes::VoidPtr Int [*size*]) (RdnRaylib::RlTypes::VoidPtr) defun
+        rdn_mem_realloc call
+    end
+
+    mem-free (RdnRaylib::RlTypes::VoidPtr) () defun
+        rdn_mem_free call
     end
 
   end
