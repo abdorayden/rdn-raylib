@@ -541,7 +541,7 @@ RdnRaylib module
         rdn_get_camera_matrix call
     end
 
-    get-camera-matrix-2d (RdnRaylib::RlTypes::Camera2D) (RdnRaylib::RlTypes::Matrix) defun
+    get-camera-matrix-2d (RdnRaylib::RlTypes::Camera2d) (RdnRaylib::RlTypes::Matrix) defun
         rdn_get_camera_matrix_2d call
     end
 
