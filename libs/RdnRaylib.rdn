@@ -80,6 +80,7 @@ RdnRaylib module
         Int Uint const
         Int IntPtr const
         Func LogCallback const
+        List FilePathList const
     end
 
     [* private *]
@@ -629,6 +630,207 @@ RdnRaylib module
 
     mem-free (RdnRaylib::RlTypes::VoidPtr) () defun
         rdn_mem_free call
+    end
+
+    load-file-data (Str) (Str Int [*int for it's size*]) defun
+        rdn_load_file_data call
+    end
+
+    unload-file-data (Str) () defun
+        rdn_load_file_data call
+    end
+
+    save-file-data (
+                   Str [* filename *]
+                   Str [* data *]
+                   ) (Bool) defun
+        rdn_save_file_data call
+    end
+
+    export-data-as-code (
+                   Str [* filename *]
+                   Str [* data *]
+                   ) (Bool) defun
+        rdn_export_data_as_code call
+    end
+
+    load-file-text (Str [* filename *]) (Str [* data *]) defun
+        rdn_load_file_text call
+    end
+
+    unload-file-text (Str [* filename *]) () defun
+        rdn_load_file_text call
+    end
+
+
+    save-file-text (Str [* filename *] Str [* text *]) (Bool) defun
+        rdn_save_file_text call
+    end
+
+    file-rename (Str [* filename *] Str [* file rename *]) (Int) defun
+        rdn_file_rename call
+    end
+
+    file-remove (Str [* filename *]) (Int) defun
+        rdn_file_remove call
+    end
+
+    file-copy (Str [*src*]  Str [*dst*]) (Int) defun
+        rdn_file_copy call
+    end
+
+    file-move (Str [*src*]  Str [*dst*]) (Int) defun
+        rdn_file_move call
+    end
+
+    file-text-replace (
+                      Str [*filename*]
+                      Str [*search*]
+                      Str [*replacement*]
+                      ) (Int) defun
+        rdn_file_text_replace call
+    end
+
+    file-text-find-index (
+                      Str [*filename*]
+                      Str [*search*]
+                      ) (Int) defun
+        rdn_file_text_find_index call
+    end
+
+    file-exists (Str) (Bool) defun
+        rdn_file_exists call
+    end
+
+    directory-exists (Str) (Bool) defun
+        rdn_directory_exists call
+    end
+
+    is-file-extension (Str [*filename*]
+                      Str [*extension*]
+                      ) (Bool) defun
+        rdn_is_file_extension call
+    end
+
+    get-file-length (Str) (Int) defun
+        rdn_get_file_length call
+    end
+
+    get-file-mod-time (Str) (Int) defun
+        rdn_get_file_mod_time call
+    end
+
+    get-file-extension (Str) (Str) defun
+        rdn_get_file_extension call
+    end
+
+    get-file-name (Str [*file path*]) (Str) defun
+        rdn_get_file_name call
+    end
+
+    get-file-name-without-extension (Str [*file path*]) (Str) defun
+        rdn_get_file_name_without_extension call
+    end
+
+    get-directory-path (Str [*dir path*]) (Str) defun
+        rdn_get_directory_path call
+    end
+
+    get-prev-directory-path (Str [*dir path*]) (Str) defun 
+        rdn_get_prev_directory_path call
+    end
+
+    get-working-directory () (Str) defun 
+        rdn_get_working_directory call
+    end
+
+    get-application-directory () (Str) defun
+        rdn_get_application_directory call
+    end
+
+    make-directory (Str [*dirpath*]) (Int) defun
+        rdn_make_directory call
+    end
+
+    change-directory (Str [*dirpath*]) (Int) defun
+        rdn_change_directory call
+    end
+
+    is-filepath (Str [*path*]) (Bool) defun
+        rdn_is_filepath call
+    end
+
+
+    is-file-name-valid (Str [*filename*]) (Bool) defun
+        rdn_is_file_name_valid call
+    end
+
+    load-directory-files (Str [*dirpath*]) (RdnRaylib::RlTypes::FilePathList) defun
+        rdn_load_directory_files call
+    end
+
+
+    load-directory-files-ex (
+                            Str [* basePath *]
+                            Str [* filter *]
+                            Bool [* scanSubdirs *]
+                            ) (RdnRaylib::RlTypes::FilePathList) defun
+        rdn_load_directory_files_ex call
+    end
+
+    is-file-dropped () (Bool) defun
+        rdn_is_file_dropped call
+    end
+
+
+    load-dropped-files () (RdnRaylib::RlTypes::FilePathList) defun
+        rdn_load_dropped_files call
+    end
+
+
+    get-directory-file-count (Str [*dirpath*]) (Int) defun
+        rdn_get_directory_file_count call
+    end
+
+    get-directory-file-count-ex (
+                            Str [* basePath *]
+                            Str [* filter *]
+                            Bool [* scanSubdirs *]
+                                ) (Int) defun
+        rdn_get_directory_file_count_ex call
+    end
+
+
+    compress-data (Str [*data*]) (Str [*compressed data*] Int [*and it's size*]) defun
+        rdn_compress_data call
+    end
+
+    decompress-data (Str [*data*]) (Str [*decompressed data*] Int [*and it's size*]) defun
+        rdn_decompress_data call
+    end
+
+    encode-data-base64 (Str [*data*]) (Str [*encoded data*] Int [*and it's size*]) defun
+        rdn_encode_data_base64 call
+    end
+
+    decode-data-base64 (Str [*text*]) (Str [*decoded data*] Int [*and it's size*]) defun
+        rdn_decode_data_base64 call
+    end
+
+    compute-crc32 (Str [*data*]) (Int) defun
+        rdn_compute_crc32 call
+    end
+
+    compute-md5 (Str [*data*]) (List [* of 4 elements*]) defun
+        rdn_compute_md5 call
+    end
+
+    compute-sha1 (Str [*data*]) (List [* of 5 elements*]) defun
+        rdn_compute_sha1 call
+    end
+
+    compute-sha256 (Str [*data*]) (List [* of 8 elements*]) defun
+        rdn_compute_sha256 call
     end
 
   end

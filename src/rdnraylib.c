@@ -1,7 +1,9 @@
 #include <assert.h>
 #include <rdn.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 #include "./helpers.c"
 #include "raylib-6.0_linux_amd64/include/raylib.h"
 #include "rdn/include/rdn.h"
@@ -1654,6 +1656,584 @@ RDN_SIG(rdn_mem_free) {
     return true;
 }
 
+RDN_SIG(rdn_load_file_data) {
+    // in this function it will be diffrent the data size it pushed at the top of the stack
+    CHECK(1)
+
+    const char* fileName = api->to_string(api , -1);
+    if (fileName == NULL) {
+        return false;
+    }
+
+    bool ok = true;
+    int dataSize = 0;
+
+    unsigned char *loadedfiledata = LoadFileData(fileName, &dataSize);
+    ok &= api->push_string(api,(const char*)loadedfiledata);
+    ok &= api->push_integer(api,dataSize);
+    POP(1)
+    return ok;
+}
+
+RDN_SIG(rdn_unload_file_data) {
+    CHECK(1)
+    const char* data = api->to_string(api , -1);
+    if (data == NULL) {
+        return false;
+    }
+
+    POP(1)
+    UnloadFileData((unsigned char*)data);
+    return true;
+}
+
+RDN_SIG(rdn_save_file_data) {
+    CHECK(2)
+
+    const char* data = api->to_string(api , -1);
+    if (data == NULL) {
+        return false;
+    }
+
+    const char* fileName = api->to_string(api , -2);
+    if (fileName == NULL) {
+        return false;
+    }
+
+    POP(2)
+    return api->push_boolean(api,SaveFileData(fileName, (void*)data, (int)strlen(data)));
+}
+
+RDN_SIG(rdn_export_data_as_code) {
+    CHECK(2);
+
+    const char* fileName = api->to_string(api , -1);
+    if (fileName == NULL) {
+        return false;
+    }
+
+    const char* data = api->to_string(api , -2);
+    if (data == NULL) {
+        return false;
+    }
+
+    POP(2)
+    return api->push_boolean(api,ExportDataAsCode((const unsigned char *)data, strlen(data), fileName));
+}
+
+RDN_SIG(rdn_load_file_text) {
+    CHECK(1);
+    const char* fileName = api->to_string(api , -1);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_string(api,LoadFileText(fileName));
+}
+
+RDN_SIG(rdn_unload_file_text) {
+    CHECK(1);
+    const char* text = api->to_string(api , -1);
+    if (text == NULL) {
+        return false;
+    }
+    POP(1)
+    UnloadFileText((char*)text);
+    return true;
+}
+
+RDN_SIG(rdn_save_file_text) {
+
+    CHECK(2);
+    const char* text = api->to_string(api , -1);
+    if (text == NULL) {
+        return false;
+    }
+    const char* fileName = api->to_string(api , -2);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(2)
+    return api->push_boolean(api,SaveFileText(fileName,text));
+}
+
+// TODO: save as log callback
+// RLAPI void SetLoadFileDataCallback(LoadFileDataCallback callback);  // Set custom file binary data loader
+// RLAPI void SetSaveFileDataCallback(SaveFileDataCallback callback);  // Set custom file binary data saver
+// RLAPI void SetLoadFileTextCallback(LoadFileTextCallback callback);  // Set custom file text data loader
+// RLAPI void SetSaveFileTextCallback(SaveFileTextCallback callback);  // Set custom file text data saver
+
+RDN_SIG(rdn_file_rename) {
+    CHECK(2);
+    const char* fileRename = api->to_string(api , -1);
+        return false;
+        if (fileRename == NULL) {
+    }
+    const char* fileName = api->to_string(api , -2);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(2)
+    return api->push_integer(api,FileRename(fileName,fileRename));
+}
+
+RDN_SIG(rdn_file_remove) {
+    CHECK(1);
+    const char* fileName = api->to_string(api , -1);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_integer(api,FileRemove(fileName));
+}
+
+RDN_SIG(rdn_file_copy) {
+    CHECK(2);
+    const char* dstPath = api->to_string(api , -1);
+        return false;
+        if (dstPath == NULL) {
+    }
+    const char* srcPath = api->to_string(api , -2);
+    if (srcPath == NULL) {
+        return false;
+    }
+    POP(2)
+    return api->push_integer(api,FileCopy(srcPath,dstPath));
+}
+
+RDN_SIG(rdn_file_move) {
+    CHECK(2);
+    const char* dstPath = api->to_string(api , -1);
+        return false;
+        if (dstPath == NULL) {
+    }
+    const char* srcPath = api->to_string(api , -2);
+    if (srcPath == NULL) {
+        return false;
+    }
+    POP(2)
+    return api->push_integer(api,FileMove(srcPath,dstPath));
+}
+
+RDN_SIG(rdn_file_text_replace) {
+    CHECK(3);
+    const char* replacement = api->to_string(api , -1);
+        return false;
+        if (replacement == NULL) {
+    }
+    const char* search = api->to_string(api , -2);
+    if (search == NULL) {
+        return false;
+    }
+    const char* fileName = api->to_string(api , -3);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(3)
+    return api->push_integer(api,FileTextReplace(fileName, search, replacement));
+}
+
+RDN_SIG(rdn_file_text_find_index) {
+    CHECK(2);
+    const char* search = api->to_string(api , -1);
+    if (search == NULL) {
+        return false;
+    }
+    const char* fileName = api->to_string(api , -2);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(2)
+    return api->push_integer(api,FileTextFindIndex(fileName, search));
+}
+
+RDN_SIG(rdn_file_exists) {
+    CHECK(1);
+    const char* fileName = api->to_string(api , -1);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,FileExists(fileName));
+}
+
+RDN_SIG(rdn_directory_exists) {
+    CHECK(1);
+    const char* dirPath = api->to_string(api , -1);
+    if (dirPath == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,DirectoryExists(dirPath));
+}
+
+RDN_SIG(rdn_is_file_extension) {
+    CHECK(2);
+    const char* ext = api->to_string(api , -1);
+    if (ext == NULL) {
+        return false;
+    }
+    const char* fileName = api->to_string(api , -2);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(2)
+    return api->push_boolean(api,IsFileExtension(fileName,ext));
+}
+
+RDN_SIG(rdn_get_file_length) {
+    CHECK(1)
+    const char* fileName = api->to_string(api , -1);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_integer(api,GetFileLength(fileName));
+}
+
+RDN_SIG(rdn_get_file_mod_time) {
+    CHECK(1)
+    const char* fileName = api->to_string(api , -1);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_integer(api,GetFileModTime(fileName));
+}
+
+RDN_SIG(rdn_get_file_extension) {
+    CHECK(1)
+    const char* fileName = api->to_string(api , -1);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_string(api,GetFileExtension(fileName));
+}
+
+RDN_SIG(rdn_get_file_name) {
+    CHECK(1)
+    const char* filePath = api->to_string(api , -1);
+    if (filePath == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_string(api,GetFileName(filePath));
+}
+
+RDN_SIG(rdn_get_file_name_without_extension) {
+    CHECK(1)
+    const char* filePath = api->to_string(api , -1);
+    if (filePath == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_string(api,GetFileNameWithoutExt(filePath));
+}
+
+RDN_SIG(rdn_get_directory_path) {
+    CHECK(1)
+    const char* dirPath = api->to_string(api , -1);
+    if (dirPath == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_string(api,GetDirectoryPath(dirPath));
+}
+
+RDN_SIG(rdn_get_prev_directory_path) {
+    CHECK(1)
+    const char* dirPath = api->to_string(api , -1);
+    if (dirPath == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_string(api,GetPrevDirectoryPath(dirPath));
+}
+
+RDN_SIG(rdn_get_working_directory) {
+    return api->push_string(api,GetWorkingDirectory());
+}
+
+RDN_SIG(rdn_get_application_directory) {
+    return api->push_string(api,GetApplicationDirectory());
+}
+
+RDN_SIG(rdn_make_directory) {
+    CHECK(1)
+    const char* dirPath = api->to_string(api , -1);
+    if (dirPath == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_integer(api,MakeDirectory(dirPath));
+}
+
+RDN_SIG(rdn_change_directory) {
+    CHECK(1)
+    const char* dirPath = api->to_string(api , -1);
+    if (dirPath == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,ChangeDirectory(dirPath));
+}
+
+RDN_SIG(rdn_is_filepath) {
+    CHECK(1)
+    const char* path = api->to_string(api , -1);
+    if (path == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsPathFile(path));
+}
+
+RDN_SIG(rdn_is_file_name_valid) {
+    CHECK(1)
+    const char* fileName = api->to_string(api , -1);
+    if (fileName == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsFileNameValid(fileName));
+}
+
+RDN_SIG(rdn_load_directory_files) {
+    // in case you load directory files you don't have to worry about unloading them
+    // they will be unloaded by the interpreter of rdn
+    CHECK(1)
+    const char* dirPath = api->to_string(api , -1);
+    if (dirPath == NULL) {
+        return false;
+    }
+    POP(1)
+    FilePathList plist = LoadDirectoryFiles(dirPath);
+    bool ok = rdn_filepathlist_to_list(api,plist);
+    UnloadDirectoryFiles(plist);
+    return ok;
+}
+
+RDN_SIG(rdn_load_directory_files_ex) {
+    CHECK(3)
+    bool scanSubdirs = false;
+    if(!api->to_boolean(api,-1,&scanSubdirs)){
+        return false;
+    }
+    const char* filter = api->to_string(api , -2);
+    if (filter == NULL) {
+        return false;
+    }
+    const char* basePath = api->to_string(api , -3);
+    if (basePath == NULL) {
+        return false;
+    }
+    POP(3)
+    FilePathList plist = LoadDirectoryFilesEx(basePath,filter,scanSubdirs);
+    bool ok = rdn_filepathlist_to_list(api,plist);
+    UnloadDirectoryFiles(plist);
+    return ok;
+}
+
+RDN_SIG(rdn_is_file_dropped) {
+    return api->push_boolean(api,IsFileDropped());
+}
+
+RDN_SIG(rdn_load_dropped_files) {
+    FilePathList files = LoadDroppedFiles();
+    bool ok = rdn_filepathlist_to_list(api,files);
+    UnloadDroppedFiles(files);
+    return ok;
+}
+
+RDN_SIG(rdn_get_directory_file_count) {
+    CHECK(1)
+    const char *dirPath = api->to_string(api,-1);
+    if (dirPath == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_integer(api,(unsigned int) GetDirectoryFileCount(dirPath));
+}
+
+RDN_SIG(rdn_get_directory_file_count_ex) {
+    CHECK(3)
+    bool scanSubdirs = false;
+    if(!api->to_boolean(api,-1,&scanSubdirs)){
+        return false;
+    }
+    const char* filter = api->to_string(api , -2);
+    if (filter == NULL) {
+        return false;
+    }
+    const char* basePath = api->to_string(api , -3);
+    if (basePath == NULL) {
+        return false;
+    }
+    POP(3)
+    return api->push_integer(api,(unsigned int)GetDirectoryFileCountEx(basePath, filter, scanSubdirs));
+}
+
+RDN_SIG(rdn_compress_data) {
+    // in this function wrapper data size is get it by data string 
+    // and push compressed data size as return
+    CHECK(1)
+    int compDataSize;
+    const char* data = api->to_string(api,-1);
+    int dataSize = (int)strlen(data);
+    POP(1)
+    unsigned char *ret = CompressData((const unsigned char *)data, dataSize, &compDataSize);
+    if (ret == NULL) {
+        return false;
+    }
+    api->push_string(api,(const char*)ret);
+    api->push_integer(api,compDataSize);
+    return true;
+}
+
+RDN_SIG(rdn_decompress_data) {
+    // in this function wrapper data size is get it by data string 
+    // and push compressed data size as return
+    CHECK(1)
+    int compDataSize;
+    const char* data = api->to_string(api,-1);
+    int dataSize = (int)strlen(data);
+    POP(1)
+    unsigned char *ret = DecompressData((const unsigned char *)data, dataSize, &compDataSize);
+    if (ret == NULL) {
+        return false;
+    }
+    bool ok = true;
+    ok &= api->push_string(api,(const char*)ret);
+    ok &= api->push_integer(api,compDataSize);
+    return ok;
+}
+
+RDN_SIG(rdn_encode_data_base64) {
+    // in this function wrapper data size is get it by data string 
+    // and push compressed data size as return
+    CHECK(1)
+    int outputSize;
+    const char* data = api->to_string(api,-1);
+    int dataSize = (int)strlen(data);
+    POP(1)
+
+    char* ret = EncodeDataBase64((const unsigned char*)data,dataSize,&outputSize);
+    bool ok = true;
+    ok &= api->push_string(api,(const char*)ret);
+    ok &= api->push_integer(api,outputSize);
+    return ok;
+}
+
+RDN_SIG(rdn_decode_data_base64) {
+    // in this function wrapper data size is get it by data string 
+    // and push compressed data size as return
+    CHECK(1)
+    int outputSize;
+    const char* text = api->to_string(api,-1);
+    POP(1)
+    unsigned char *ret = DecodeDataBase64(text, &outputSize);
+    bool ok = true;
+    ok &= api->push_string(api,(const char*)ret);
+    ok &= api->push_integer(api,outputSize);
+    return ok;
+}
+
+RDN_SIG(rdn_compute_crc32) {
+    // in this function wrapper data size is get it by data string 
+    // and push compressed data size as return
+    CHECK(1)
+    const char* data = api->to_string(api,-1);
+    int dataSize = (int)strlen(data);
+    POP(1)
+    unsigned int ret = ComputeCRC32((unsigned char *)data, dataSize);
+    return api->push_integer(api,(long)ret);
+}
+
+RDN_SIG(rdn_compute_md5) {
+    // in this function wrapper data size is get it by data string 
+    // and push compressed data size as return
+    CHECK(1)
+    const char* data = api->to_string(api,-1);
+    int dataSize = (int)strlen(data);
+    POP(1)
+    unsigned int* ret = ComputeMD5((unsigned char *)data, dataSize);
+    bool ok = true;
+    ok &= api->push_list(api);
+
+    if (!ok) {
+        return false;
+    }
+
+    for (size_t i = 0; i < 4; ++i) {
+        ok &= api->push_integer(api,ret[i]);
+        ok &= api->list_append(api,-2,-1);
+        ok &= api->pop(api,1);
+
+        if (!ok) {
+            return false;
+        }
+
+    }
+    return ok;
+}
+
+RDN_SIG(rdn_compute_sha1) {
+    // in this function wrapper data size is get it by data string 
+    // and push compressed data size as return
+    CHECK(1)
+    const char* data = api->to_string(api,-1);
+    int dataSize = (int)strlen(data);
+    POP(1)
+    unsigned int* ret = ComputeSHA1((unsigned char *)data, dataSize);
+    bool ok = true;
+    ok &= api->push_list(api);
+
+    if (!ok) {
+        return false;
+    }
+
+    for (size_t i = 0; i < 5; ++i) {
+        ok &= api->push_integer(api,ret[i]);
+        ok &= api->list_append(api,-2,-1);
+        ok &= api->pop(api,1);
+
+        if (!ok) {
+            return false;
+        }
+
+    }
+    return ok;
+}
+
+RDN_SIG(rdn_compute_sha256) {
+    // in this function wrapper data size is get it by data string 
+    // and push compressed data size as return
+    CHECK(1)
+    const char* data = api->to_string(api,-1);
+    int dataSize = (int)strlen(data);
+    POP(1)
+    unsigned int* ret = ComputeSHA256((unsigned char *)data, dataSize);
+    bool ok = true;
+    ok &= api->push_list(api);
+
+    if (!ok) {
+        return false;
+    }
+
+    for (size_t i = 0; i < 8; ++i) {
+        ok &= api->push_integer(api,ret[i]);
+        ok &= api->list_append(api,-2,-1);
+        ok &= api->pop(api,1);
+
+        if (!ok) {
+            return false;
+        }
+
+    }
+    return ok;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -1774,8 +2354,52 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_set_trace_log_callback),
     REG_FUNC(rdn_mem_alloc),
     REG_FUNC(rdn_mem_realloc),
-
     REG_FUNC(rdn_mem_free),
+
+
+    REG_FUNC(rdn_load_file_data),
+    REG_FUNC(rdn_unload_file_data),
+    REG_FUNC(rdn_save_file_data),
+    REG_FUNC(rdn_export_data_as_code),
+    REG_FUNC(rdn_load_file_text),
+    REG_FUNC(rdn_unload_file_text),
+    REG_FUNC(rdn_save_file_text),
+    REG_FUNC(rdn_file_rename),
+    REG_FUNC(rdn_file_remove),
+    REG_FUNC(rdn_file_copy),
+    REG_FUNC(rdn_file_move),
+    REG_FUNC(rdn_file_text_replace),
+    REG_FUNC(rdn_file_text_find_index),
+    REG_FUNC(rdn_file_exists),
+    REG_FUNC(rdn_directory_exists),
+    REG_FUNC(rdn_is_file_extension),
+    REG_FUNC(rdn_get_file_length),
+    REG_FUNC(rdn_get_file_mod_time),
+    REG_FUNC(rdn_get_file_extension),
+    REG_FUNC(rdn_get_file_name),
+    REG_FUNC(rdn_get_file_name_without_extension),
+    REG_FUNC(rdn_get_directory_path),
+    REG_FUNC(rdn_get_prev_directory_path),
+    REG_FUNC(rdn_get_working_directory),
+    REG_FUNC(rdn_get_application_directory),
+    REG_FUNC(rdn_make_directory),
+    REG_FUNC(rdn_change_directory),
+    REG_FUNC(rdn_is_filepath),
+    REG_FUNC(rdn_is_file_name_valid),
+    REG_FUNC(rdn_load_directory_files),
+    REG_FUNC(rdn_load_directory_files_ex),
+    REG_FUNC(rdn_is_file_dropped),
+    REG_FUNC(rdn_load_dropped_files),
+    REG_FUNC(rdn_get_directory_file_count),
+    REG_FUNC(rdn_get_directory_file_count_ex),
+    REG_FUNC(rdn_compress_data),
+    REG_FUNC(rdn_decompress_data),
+    REG_FUNC(rdn_encode_data_base64),
+    REG_FUNC(rdn_decode_data_base64),
+    REG_FUNC(rdn_compute_crc32),
+    REG_FUNC(rdn_compute_md5),
+    REG_FUNC(rdn_compute_sha1),
+    REG_FUNC(rdn_compute_sha256),
 };
 
 bool rdn_module_init(RDNModule *module) {

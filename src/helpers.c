@@ -4,7 +4,11 @@
 #include "./raylib-6.0_linux_amd64/include/raylib.h"
 #include "rdn/include/rdn.h"
 #include "rdn/include/rdn_native.h"
+#include <rdn.h>
+#include <rdn_native.h>
+#include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
 
 #define REG_FUNC(func) {#func , (func)}
 #define REG_TYPE struct { const char *func_name; RDNNativeFunction func; }
@@ -17,12 +21,48 @@
     ok &= api->list_append(api,-2,-1);\
     ok &= api->pop(api,1);
 
+bool rdn_filepathlist_to_list(RDNApi* api,FilePathList plist) {
+    bool ok = api->push_list(api);
+    for (size_t i = 0; i < plist.count; ++i) {
+        ok &= api->push_string(api,plist.paths[i]);
+        ok &= api->list_append(api,-2,-1);
+        ok &= api->pop(api,1);
+    }
+    return ok;
+}
+
+FilePathList rdn_list_to_filepathlist(RDNApi* api, bool* ok) {
+    FilePathList plist = {0};
+    *ok = true;
+    RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+    Value* val = rdn_pop_value(state);
+    if (val->type != VALUE_LIST) {
+        *ok = false;
+        return plist;
+    }
+
+    for (size_t i = 0; i < val->as.list.count; ++i) {
+        if (val->as.list.items[i]->type != VALUE_STRING) {
+            *ok = false;
+            return plist;
+        }
+        plist.paths[plist.count++] = strdup(val->as.list.items[i]->as.string);
+    }
+
+    return plist;
+}
+
 bool check_stack(RDNApi* api, int val) {
     return api->stack_size(api) < val;
 }
 
 #define CHECK(i) \
     if (!check_stack(api,(i))) {\
+        return false;\
+    }
+
+#define POP(i) \
+    if (!api->pop(api,(i))) {\
         return false;\
     }
 
