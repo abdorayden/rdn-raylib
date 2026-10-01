@@ -8,6 +8,13 @@
 #include "raylib-6.0_linux_amd64/include/raylib.h"
 #include "rdn/include/rdn.h"
 
+// custom callbacks
+static Value* trace_log_callback = NULL;
+static Value* loadfiledatacallback = NULL;
+static Value* savefiledatacallback = NULL;
+static Value* loadfiletextcallback = NULL;
+static Value* savefiletextcallback = NULL;
+
 RDN_SIG(rdn_init_window) {
   if (api->stack_size(api) < 3) {
     api->raise_error(api, "init-window requires 3 params");
@@ -1583,11 +1590,10 @@ RDN_SIG(rdn_set_trace_log_level) {
     return true;
 }
 
-static Value* stack_with_callback = NULL;
 
 RDN_SIG(rdn_trace_log) {
     CHECK(2)
-    if(stack_with_callback == NULL) {
+    if(trace_log_callback == NULL) {
         const char* text = api->to_string(api,-1);
         long logLevel = 0;
 
@@ -1600,7 +1606,7 @@ RDN_SIG(rdn_trace_log) {
         return true;
     }
     RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
-    rdn_push_value(state, stack_with_callback);
+    rdn_push_value(state, trace_log_callback);
     api->call_function(api);
     return true;
 }
@@ -1611,7 +1617,7 @@ RDN_SIG(rdn_set_trace_log_callback) {
     CHECK(1)
     if(!api->is_function(api,-1))   return false;
     RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
-    stack_with_callback = rdn_pop_value(state);
+    trace_log_callback = rdn_pop_value(state);
     return true;
 }
 
@@ -1656,23 +1662,40 @@ RDN_SIG(rdn_mem_free) {
     return true;
 }
 
+RDN_SIG(rdn_set_load_file_data_callback) {
+  CHECK(1)
+  if (!api->is_function(api,-1)) {
+    return false;
+  }
+  RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+  loadfiledatacallback = rdn_pop_value(state);
+  return true;
+}
+
 RDN_SIG(rdn_load_file_data) {
     // in this function it will be diffrent the data size it pushed at the top of the stack
     CHECK(1)
+  bool ok = true;
 
+  if (loadfiledatacallback == NULL) {
     const char* fileName = api->to_string(api , -1);
     if (fileName == NULL) {
-        return false;
+      return false;
     }
+    POP(1)
 
-    bool ok = true;
     int dataSize = 0;
 
     unsigned char *loadedfiledata = LoadFileData(fileName, &dataSize);
     ok &= api->push_string(api,(const char*)loadedfiledata);
     ok &= api->push_integer(api,dataSize);
-    POP(1)
     return ok;
+
+  }
+  RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+  rdn_push_value(state, loadfiledatacallback);
+  api->call_function(api);
+  return ok;
 }
 
 RDN_SIG(rdn_unload_file_data) {
@@ -1687,21 +1710,37 @@ RDN_SIG(rdn_unload_file_data) {
     return true;
 }
 
+RDN_SIG(rdn_set_save_file_data_callback) {
+  CHECK(1)
+  if (!api->is_function(api,-1)) {
+    return false;
+  }
+  RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+  savefiledatacallback = rdn_pop_value(state);
+  return true;
+}
+
 RDN_SIG(rdn_save_file_data) {
     CHECK(2)
 
+  if (savefiledatacallback == NULL) {
     const char* data = api->to_string(api , -1);
     if (data == NULL) {
-        return false;
+      return false;
     }
 
     const char* fileName = api->to_string(api , -2);
     if (fileName == NULL) {
-        return false;
+      return false;
     }
 
     POP(2)
     return api->push_boolean(api,SaveFileData(fileName, (void*)data, (int)strlen(data)));
+  }
+  RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+  rdn_push_value(state, savefiledatacallback);
+  api->call_function(api);
+  return true;
 }
 
 RDN_SIG(rdn_export_data_as_code) {
@@ -1721,14 +1760,30 @@ RDN_SIG(rdn_export_data_as_code) {
     return api->push_boolean(api,ExportDataAsCode((const unsigned char *)data, strlen(data), fileName));
 }
 
+RDN_SIG(rdn_set_load_file_text_callback) {
+  CHECK(1)
+  if (!api->is_function(api,-1)) {
+    return false;
+  }
+  RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+  loadfiletextcallback = rdn_pop_value(state);
+  return true;
+}
+
 RDN_SIG(rdn_load_file_text) {
     CHECK(1);
+  if (loadfiletextcallback == NULL) {
     const char* fileName = api->to_string(api , -1);
     if (fileName == NULL) {
-        return false;
+      return false;
     }
     POP(1)
     return api->push_string(api,LoadFileText(fileName));
+  }
+  RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+  rdn_push_value(state, loadfiletextcallback);
+  api->call_function(api);
+  return true;
 }
 
 RDN_SIG(rdn_unload_file_text) {
@@ -1742,26 +1797,36 @@ RDN_SIG(rdn_unload_file_text) {
     return true;
 }
 
+RDN_SIG(rdn_set_save_file_text_callback) {
+  CHECK(1)
+  if (!api->is_function(api,-1)) {
+    return false;
+  }
+  RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+  savefiletextcallback = rdn_pop_value(state);
+  return true;
+}
+
 RDN_SIG(rdn_save_file_text) {
 
     CHECK(2);
+  if (savefiletextcallback) {
     const char* text = api->to_string(api , -1);
     if (text == NULL) {
-        return false;
+      return false;
     }
     const char* fileName = api->to_string(api , -2);
     if (fileName == NULL) {
-        return false;
+      return false;
     }
     POP(2)
     return api->push_boolean(api,SaveFileText(fileName,text));
+  }
+  RDNState* state = (RDNState*)((NativeCallState*)api->userdata)->stack;
+  rdn_push_value(state, savefiletextcallback);
+  api->call_function(api);
+  return true;
 }
-
-// TODO: save as log callback
-// RLAPI void SetLoadFileDataCallback(LoadFileDataCallback callback);  // Set custom file binary data loader
-// RLAPI void SetSaveFileDataCallback(SaveFileDataCallback callback);  // Set custom file binary data saver
-// RLAPI void SetLoadFileTextCallback(LoadFileTextCallback callback);  // Set custom file text data loader
-// RLAPI void SetSaveFileTextCallback(SaveFileTextCallback callback);  // Set custom file text data saver
 
 RDN_SIG(rdn_file_rename) {
     CHECK(2);
@@ -2400,6 +2465,10 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_compute_md5),
     REG_FUNC(rdn_compute_sha1),
     REG_FUNC(rdn_compute_sha256),
+    REG_FUNC(rdn_set_load_file_data_callback),
+    REG_FUNC(rdn_set_save_file_data_callback),
+    REG_FUNC(rdn_set_load_file_text_callback),
+    REG_FUNC(rdn_set_save_file_text_callback),
 };
 
 bool rdn_module_init(RDNModule *module) {

@@ -80,6 +80,10 @@ RdnRaylib module
         Int Uint const
         Int IntPtr const
         Func LogCallback const
+        Func LoadFileDataCallback const
+        Func SaveFileDataCallback const
+        Func LoadFileTextCallback const
+        Func SaveFileTextCallback const
         List FilePathList const
     end
 
@@ -831,6 +835,22 @@ RdnRaylib module
 
     compute-sha256 (Str [*data*]) (List [* of 8 elements*]) defun
         rdn_compute_sha256 call
+    end
+
+    set-load-file-data-callback (RdnRaylib::RlTypes::LoadFileDataCallback) () defun
+      rdn_set_load_file_data_callback call
+    end
+
+    set-save-file-data-callback (RdnRaylib::RlTypes::SaveFileDataCallback) () defun
+      rdn_set_save_file_data_callback call
+    end
+
+    set-load-file-text-callback (RdnRaylib::RlTypes::LoadFileTextCallback) () defun
+      rdn_set_load_file_text_callback call
+    end
+
+    set-save-file-text-callback (RdnRaylib::RlTypes::SaveFileTextCallback) () defun
+      rdn_set_save_file_text_callback call
     end
 
   end
