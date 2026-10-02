@@ -1118,4 +1118,24 @@ RdnRaylib module
         rdn_is_gamepad_button_pressed call
     end
 
+    is-gamepad-button-down (Int [*gamepad just use whatever the fuck is available in enumeration above for readable values*] Int [*same thing with button*]) (Bool) defun
+        rdn_is_gamepad_button_down call
+    end
+
+    is-gamepad-button-released (Int [*gamepad just use whatever the fuck is available in enumeration above for readable values*] Int [*same thing with button*]) (Bool) defun
+        rdn_is_gamepad_button_released call
+    end
+
+    is-gamepad-button-up (Int [*gamepad just use whatever the fuck is available in enumeration above for readable values*] Int [*same thing with button*]) (Bool) defun
+        rdn_is_gamepad_button_up call
+    end
+
+    get-gamepad-button-pressed () (Int [*button*]) defun
+        rdn_get_gamepad_button_pressed call
+    end
+
+    get-gamepad-axis-count (Int [*gamepad*]) (Int) defun
+        rdn_get_gamepad_axis_count call
+    end
+
   end

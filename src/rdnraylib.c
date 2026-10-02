@@ -2480,6 +2480,62 @@ RDN_SIG(rdn_is_gamepad_button_pressed) {
     return api->push_boolean(api, IsGamepadButtonPressed((int)gamepad, (int)button));
 }
 
+RDN_SIG(rdn_is_gamepad_button_down) {
+    CHECK(2)
+    long button = 0;
+    long gamepad = 0;
+    if (!api->to_integer(api,-1,&button)) {
+        return false;
+    }
+    if (!api->to_integer(api,-2,&gamepad)) {
+        return false;
+    }
+    POP(2)
+    return api->push_boolean(api, IsGamepadButtonDown((int)gamepad, (int)button));
+}
+
+RDN_SIG(rdn_is_gamepad_button_released) {
+    CHECK(2)
+    long button = 0;
+    long gamepad = 0;
+    if (!api->to_integer(api,-1,&button)) {
+        return false;
+    }
+    if (!api->to_integer(api,-2,&gamepad)) {
+        return false;
+    }
+    POP(2)
+    return api->push_boolean(api, IsGamepadButtonReleased((int)gamepad, (int)button));
+}
+
+RDN_SIG(rdn_is_gamepad_button_up) {
+    CHECK(2)
+    long button = 0;
+    long gamepad = 0;
+    if (!api->to_integer(api,-1,&button)) {
+        return false;
+    }
+    if (!api->to_integer(api,-2,&gamepad)) {
+        return false;
+    }
+    POP(2)
+    return api->push_boolean(api, IsGamepadButtonUp((int)gamepad, (int)button));
+}
+
+RDN_SIG(rdn_get_gamepad_button_pressed) {
+    return api->push_integer(api,GetGamepadButtonPressed());
+}
+
+RDN_SIG(rdn_get_gamepad_axis_count) {
+    CHECK(1)
+    long gamepad = 0;
+    if (!api->to_integer(api,-1,&gamepad)) {
+        return false;
+    }
+    POP(1)
+    return api->push_integer(api, GetGamepadAxisCount((int)gamepad));
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -2669,6 +2725,11 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_is_gamepad_available),
     REG_FUNC(rdn_get_gamepad_name),
     REG_FUNC(rdn_is_gamepad_button_pressed),
+    REG_FUNC(rdn_is_gamepad_button_down),
+    REG_FUNC(rdn_is_gamepad_button_released),
+    REG_FUNC(rdn_is_gamepad_button_up),
+    REG_FUNC(rdn_get_gamepad_button_pressed),
+    REG_FUNC(rdn_get_gamepad_axis_count),
   };
 
 bool rdn_module_init(RDNModule *module) {
