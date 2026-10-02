@@ -7,7 +7,6 @@ Typecheck::OGTypes open
 
 RdnRaylib module
 
-
     ( 200 200 200 255 ) LIGHTGRAY  const
     ( 130 130 130 255 ) GRAY       const
     ( 80 80 80 255 ) DARKGRAY   const
@@ -209,6 +208,40 @@ RdnRaylib module
       enum CURSOR_RESIZE_ALL const        [* The omnidirectional resize/move cursor shape *]
       enum CURSOR_NOT_ALLOWED const       [* The operation-not-allowed shape *]
       reset
+    end
+
+    GamepadButton module
+        reset
+        enum UNKNOWN const              [*Unknown button, for error checking*] 
+        enum LEFT_FACE_UP const         [*Gamepad left DPAD up button*]
+        enum LEFT_FACE_RIGHT const      [*Gamepad left DPAD right button*]
+        enum LEFT_FACE_DOWN const       [*Gamepad left DPAD down button*]
+        enum LEFT_FACE_LEFT const       [*Gamepad left DPAD left button*]
+        enum RIGHT_FACE_UP const        [*Gamepad right button up (i.e. PS3: Triangle, Xbox: Y)*]
+        enum RIGHT_FACE_RIGHT const     [*Gamepad right button right (i.e. PS3: Circle, Xbox: B)*]
+        enum RIGHT_FACE_DOWN const      [*Gamepad right button down (i.e. PS3: Cross, Xbox: A)*]
+        enum RIGHT_FACE_LEFT const      [*Gamepad right button left (i.e. PS3: Square, Xbox: X)*]
+        enum LEFT_TRIGGER_1 const       [*Gamepad top/back trigger left (first), it could be a trailing button*]
+        enum LEFT_TRIGGER_2 const       [*Gamepad top/back trigger left (second), it could be a trailing button*]
+        enum RIGHT_TRIGGER_1 const      [*Gamepad top/back trigger right (first), it could be a trailing button*]
+        enum RIGHT_TRIGGER_2 const      [*Gamepad top/back trigger right (second), it could be a trailing button*]
+        enum MIDDLE_LEFT const          [*Gamepad center buttons, left one (i.e. PS3: Select)*]
+        enum MIDDLE const               [*Gamepad center buttons, middle one (i.e. PS3: PS, Xbox: XBOX)*]
+        enum MIDDLE_RIGHT const         [*Gamepad center buttons, right one (i.e. PS3: Start)*]
+        enum LEFT_THUMB const           [*Gamepad joystick pressed button left*]
+        enum RIGHT_THUMB const          [*Gamepad joystick pressed button right*]
+        reset
+    end
+
+    GamepadAxis module
+        reset
+        enum LEFT_X const     [*Gamepad left stick X axis*]
+        enum LEFT_Y const [*Gamepad left stick Y axis*]
+        enum RIGHT_X const [*Gamepad right stick X axis*]
+        enum RIGHT_Y const [*Gamepad right stick Y axis*]
+        enum LEFT_TRIGGER const [*Gamepad back trigger left, pressure level: [1..-1]*]
+        enum RIGHT_TRIGGER const [*Gamepad back trigger right, pressure level: [1..-1]*]
+        reset
     end
 
     RlTypes module
@@ -1071,6 +1104,18 @@ RdnRaylib module
 
     set-exit-key (RdnRaylib::RlTypes::KeyboardKey) () defun
         rdn_set_exit_key call
+    end
+
+    is-gamepad-available (Int [*gamepad just use whatever the fuck is available in enumeration above for readable values*]) (Bool) defun
+        rdn_is_gamepad_available call
+    end
+
+    get-gamepad-name (Int [*gamepad just use whatever the fuck is available in enumeration above for readable values*]) (Str [*name*]) defun
+        rdn_get_gamepad_name call
+    end
+
+    is-gamepad-button-pressed (Int [*gamepad just use whatever the fuck is available in enumeration above for readable values*] Int [*same thing with button*]) (Bool) defun
+        rdn_is_gamepad_button_pressed call
     end
 
   end

@@ -2445,6 +2445,41 @@ RDN_SIG(rdn_set_exit_key) {
     return true;
 }
 
+RDN_SIG(rdn_is_gamepad_available) {
+    CHECK(1)
+    long gamepad = 0;
+    if (!api->to_integer(api,-1,&gamepad)) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsGamepadAvailable(gamepad));
+}
+
+RDN_SIG(rdn_get_gamepad_name) {
+    CHECK(1)
+    long gamepad = 0;
+    if (!api->to_integer(api,-1,&gamepad)) {
+        return false;
+    }
+    POP(1)
+
+    return api->push_string(api,GetGamepadName(gamepad));
+}
+
+RDN_SIG(rdn_is_gamepad_button_pressed) {
+    CHECK(2)
+    long button = 0;
+    long gamepad = 0;
+    if (!api->to_integer(api,-1,&button)) {
+        return false;
+    }
+    if (!api->to_integer(api,-2,&gamepad)) {
+        return false;
+    }
+    POP(2)
+    return api->push_boolean(api, IsGamepadButtonPressed((int)gamepad, (int)button));
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -2631,6 +2666,9 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_get_char_pressed),
     REG_FUNC(rdn_get_key_name),
     REG_FUNC(rdn_set_exit_key),
+    REG_FUNC(rdn_is_gamepad_available),
+    REG_FUNC(rdn_get_gamepad_name),
+    REG_FUNC(rdn_is_gamepad_button_pressed),
   };
 
 bool rdn_module_init(RDNModule *module) {
