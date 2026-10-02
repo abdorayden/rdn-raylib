@@ -86,6 +86,7 @@ RdnRaylib module
         Func SaveFileTextCallback const
         List FilePathList const
         List AutomationEventList const
+        List AutomationEvent const
     end
 
     [* private *]
@@ -870,5 +871,16 @@ RdnRaylib module
         rdn_set_automation_event_base_frame call
     end
 
+    start-automation-event-recording () () defun
+      rdn_start_automation_event_recording call
+    end
+
+    stop-automation-event-recording () () defun
+      rdn_stop_automation_event_recording call
+    end
+
+    play-automation-event (RdnRaylib::RlTypes::AutomationEvent) () defun
+      rdn_play_automation_event call
+    end
 
   end

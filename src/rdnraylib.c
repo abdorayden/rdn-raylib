@@ -2342,6 +2342,30 @@ RDN_SIG(rdn_set_automation_event_base_frame) {
     return true;
 }
 
+RDN_SIG(rdn_start_automation_event_recording) {
+  StartAutomationEventRecording();
+  return true;
+}
+
+RDN_SIG(rdn_stop_automation_event_recording) {
+  StopAutomationEventRecording();
+  return true;
+}
+
+RDN_SIG(rdn_play_automation_event) {
+  CHECK(1)
+  RDNState* state = GET_STATE(api);
+  Value* rae = rdn_pop_value(state);
+  if (rae == NULL) {
+    return false;
+  }
+
+  AutomationEvent ae = rdn_list_to_automation_event(rae);
+  PlayAutomationEvent(ae);
+
+  return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -2516,7 +2540,10 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_export_automation_event_list),
     REG_FUNC(rdn_set_automation_event_list),
     REG_FUNC(rdn_set_automation_event_base_frame),
-};
+    REG_FUNC(rdn_start_automation_event_recording),
+    REG_FUNC(rdn_stop_automation_event_recording),
+    REG_FUNC(rdn_play_automation_event),
+  };
 
 bool rdn_module_init(RDNModule *module) {
 
