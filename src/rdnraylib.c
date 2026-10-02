@@ -2366,6 +2366,85 @@ RDN_SIG(rdn_play_automation_event) {
   return true;
 }
 
+RDN_SIG(rdn_is_key_pressed) {
+    CHECK(1)
+    long key = 0;
+    if (!api->to_integer(api,-1,&key)) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsKeyPressed((int)key));
+}
+
+RDN_SIG(rdn_is_key_pressed_repeat) {
+    CHECK(1)
+    long key = 0;
+    if (!api->to_integer(api,-1,&key)) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsKeyPressedRepeat((int)key));
+}
+
+RDN_SIG(rdn_is_key_down) {
+    CHECK(1)
+    long key = 0;
+    if (!api->to_integer(api,-1,&key)) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsKeyDown((int)key));
+}
+
+RDN_SIG(rdn_is_key_released) {
+    CHECK(1)
+    long key = 0;
+    if (!api->to_integer(api,-1,&key)) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsKeyReleased((int)key));
+}
+
+RDN_SIG(rdn_is_key_up) {
+    CHECK(1)
+    long key = 0;
+    if (!api->to_integer(api,-1,&key)) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsKeyUp((int)key));
+}
+
+RDN_SIG(rdn_get_key_pressed) {
+    return api->push_integer(api,GetKeyPressed());
+}
+
+RDN_SIG(rdn_get_char_pressed) {
+    return api->push_integer(api,GetCharPressed());
+}
+
+RDN_SIG(rdn_get_key_name) {
+    CHECK(1)
+    long key = 0;
+    if (!api->to_integer(api,-1,&key)) {
+        return false;
+    }
+    POP(1)
+    return api->push_string(api,GetKeyName((int)key));
+}
+
+RDN_SIG(rdn_set_exit_key) {
+    CHECK(1)
+    long key = 0;
+    if (!api->to_integer(api,-1,&key)) {
+        return false;
+    }
+    POP(1)
+    SetExitKey((int)key);
+    return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -2543,6 +2622,15 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_start_automation_event_recording),
     REG_FUNC(rdn_stop_automation_event_recording),
     REG_FUNC(rdn_play_automation_event),
+    REG_FUNC(rdn_is_key_pressed),
+    REG_FUNC(rdn_is_key_pressed_repeat),
+    REG_FUNC(rdn_is_key_down),
+    REG_FUNC(rdn_is_key_released),
+    REG_FUNC(rdn_is_key_up),
+    REG_FUNC(rdn_get_key_pressed),
+    REG_FUNC(rdn_get_char_pressed),
+    REG_FUNC(rdn_get_key_name),
+    REG_FUNC(rdn_set_exit_key),
   };
 
 bool rdn_module_init(RDNModule *module) {

@@ -58,6 +58,159 @@ RdnRaylib module
 
     end
 
+    KeyboardKey module
+      0 NULL const [* Key: NULL, used for no key pressed *]
+
+      [* Alphanumeric keys *]
+      39 APOSTROPHE const             [* Key: ' *]
+      44 COMMA const                  [* Key: , *]
+      45 MINUS const                  [* Key: - *]
+      46 PERIOD const                 [* Key: . *]
+      47 SLASH const                  [* Key: / *]
+      48 ZERO const                   [* Key: 0 *]
+      49 ONE const                    [* Key: 1 *]
+      50 TWO const                    [* Key: 2 *]
+      51 THREE const                  [* Key: 3 *]
+      52 FOUR const                   [* Key: 4 *]
+      53 FIVE const                   [* Key: 5 *]
+      54 SIX const                    [* Key: 6 *]
+      55 SEVEN const                  [* Key: 7 *]
+      56 EIGHT const                  [* Key: 8 *]
+      57 NINE const                   [* Key: 9 *]
+      59 SEMICOLON const              [* Key: ; *]
+      61 EQUAL const                  [* Key: = *]
+      65 A const                      [* Key: A | a *]
+      66 B const                      [* Key: B | b *]
+      67 C const                      [* Key: C | c *]
+      68 D const                      [* Key: D | d *]
+      69 E const                      [* Key: E | e *]
+      70 F const                      [* Key: F | f *]
+      71 G const                      [* Key: G | g *]
+      72 H const                      [* Key: H | h *]
+      73 I const                      [* Key: I | i *]
+      74 J const                      [* Key: J | j *]
+      75 K const                      [* Key: K | k *]
+      76 L const                      [* Key: L | l *]
+      77 M const                      [* Key: M | m *]
+      78 N const                      [* Key: N | n *]
+      79 O const                      [* Key: O | o *]
+      80 P const                      [* Key: P | p *]
+      81 Q const                      [* Key: Q | q *]
+      82 R const                      [* Key: R | r *]
+      83 S const                      [* Key: S | s *]
+      84 T const                      [* Key: T | t *]
+      85 U const                      [* Key: U | u *]
+      86 V const                      [* Key: V | v *]
+      87 W const                      [* Key: W | w *]
+      88 X const                      [* Key: X | x *]
+      89 Y const                      [* Key: Y | y *]
+      90 Z const                      [* Key: Z | z *]
+      91 LEFT_BRACKET const           [* Key: [ *]
+      92 BACKSLASH const              [* Key: '\' *]
+      93 RIGHT_BRACKET const          [* Key: ] *]
+      96 GRAVE const                  [* Key: ` *]
+
+      [* Function keys *]
+      32  SPACE const           [*/ Key: Space *]
+      256 ESCAPE const          [* Key: Esc *]
+      257 ENTER const           [* Key: Enter *]
+      258 TAB const             [* Key: Tab *]
+      259 BACKSPACE const       [* Key: Backspace *]
+      260 INSERT const          [* Key: Ins *]
+      261 DELETE const          [* Key: Del *]
+      262 RIGHT const           [* Key: Cursor right *]
+      263 LEFT const            [* Key: Cursor left *]
+      264 DOWN const            [* Key: Cursor down *]
+      265 UP const              [* Key: Cursor up *]
+      266 PAGE_UP const         [* Key: Page up *]
+      267 PAGE_DOWN const       [* Key: Page down *]
+      268 HOME const            [* Key: Home *]
+      269 END const             [* Key: End *]
+      280 CAPS_LOCK const       [* Key: Caps lock *]
+      281 SCROLL_LOCK const     [* Key: Scroll down *]
+      282 NUM_LOCK const        [* Key: Num lock *]
+      283 PRINT_SCREEN const    [* Key: Print screen *]
+      284 PAUSE const           [* Key: Pause *]
+      290 F1 const              [* Key: F1 *]
+      291 F2 const              [* Key: F2 *]
+      292 F3 const              [* Key: F3 *]
+      293 F4 const              [* Key: F4 *]
+      294 F5 const              [* Key: F5 *]
+      295 F6 const              [* Key: F6 *]
+      296 F7 const              [* Key: F7 *]
+      297 F8 const              [* Key: F8 *]
+      298 F9 const              [* Key: F9 *]
+      299 F10 const             [* Key: F10 *]
+      300 F11 const             [* Key: F11 *]
+      301 F12 const             [* Key: F12 *]
+      340 LEFT_SHIFT const      [* Key: Shift left *]
+      341 LEFT_CONTROL const    [* Key: Control left *]
+      342 LEFT_ALT const        [* Key: Alt left *]
+      343 LEFT_SUPER const      [* Key: Super left *]
+      344 RIGHT_SHIFT const     [* Key: Shift right *]
+      345 RIGHT_CONTROL const   [* Key: Control right *]
+      346 RIGHT_ALT const       [* Key: Alt right *]
+      347 RIGHT_SUPER const     [* Key: Super right *]
+      348 KB_MENU const         [* Key: KB menu *]
+
+      [* Keypad keys *]
+      320 KEY_KP_0 const            [* Key: Keypad 0 *]
+      321 KEY_KP_1 const            [* Key: Keypad 1 *]
+      322 KEY_KP_2 const            [* Key: Keypad 2 *]
+      323 KEY_KP_3 const            [* Key: Keypad 3 *]
+      324 KEY_KP_4 const            [* Key: Keypad 4 *]
+      325 KEY_KP_5 const            [* Key: Keypad 5 *]
+      326 KEY_KP_6 const            [* Key: Keypad 6 *]
+      327 KEY_KP_7 const            [* Key: Keypad 7 *]
+      328 KEY_KP_8 const            [* Key: Keypad 8 *]
+      329 KEY_KP_9 const            [* Key: Keypad 9 *]
+      330 KEY_KP_DECIMAL const      [* Key: Keypad . *]
+      331 KEY_KP_DIVIDE const       [* Key: Keypad / *]
+      332 KEY_KP_MULTIPLY const     [* Key: Keypad * *]
+      333 KEY_KP_SUBTRACT const     [* Key: Keypad - *]
+      334 KEY_KP_ADD const          [* Key: Keypad + *]
+      335 KEY_KP_ENTER const        [* Key: Keypad Enter *]
+      336 KEY_KP_EQUAL const        [* Key: Keypad = *]
+
+      [* Android key buttons *]
+      4   KEY_BACK            [* Key: Android back button *]
+      5   KEY_MENU            [* Key: Android menu button *]
+      24  KEY_VOLUME_UP       [* Key: Android volume up button *]
+      25  KEY_VOLUME_DOWN     [* Key: Android volume down button *]
+
+    end
+
+    MouseButton module
+      reset
+      enum BUTTON_LEFT    const      [* Mouse button left *]
+      RdnRaylib::MouseButton::BUTTON_LEFT LEFT_BUTTON const
+      enum BUTTON_RIGHT   const      [* Mouse button right *]
+      RdnRaylib::MouseButton::BUTTON_RIGHT RIGHT_BUTTON const
+      enum BUTTON_MIDDLE  const      [* Mouse button middle (pressed wheel) *]
+      RdnRaylib::MouseButton::BUTTON_MIDDLE MIDDLE_BUTTON const
+      enum BUTTON_SIDE    const      [* Mouse button side (advanced mouse device) *]
+      enum BUTTON_EXTRA   const      [* Mouse button extra (advanced mouse device) *]
+      enum BUTTON_FORWARD const      [* Mouse button forward (advanced mouse device) *]
+      enum BUTTON_BACK    const      [* Mouse button back (advanced mouse device) *]
+      reset
+    end
+
+    MouseCursor module
+      reset
+      enum CURSOR_DEFAULT const     [* Default pointer shape *]
+      enum CURSOR_ARROW const             [* Arrow shape *]
+      enum CURSOR_IBEAM const             [* Text writing cursor shape *]
+      enum CURSOR_CROSSHAIR const         [* Cross shape *]
+      enum CURSOR_POINTING_HAND const     [* Pointing hand cursor *]
+      enum CURSOR_RESIZE_EW const         [* Horizontal resize/move arrow shape *]
+      enum CURSOR_RESIZE_NS const         [* Vertical resize/move arrow shape *]
+      enum CURSOR_RESIZE_NWSE const       [* Top-left to bottom-right diagonal resize/move arrow shape *]
+      enum CURSOR_RESIZE_NESW const       [* The top-right to bottom-left diagonal resize/move arrow shape *]
+      enum CURSOR_RESIZE_ALL const        [* The omnidirectional resize/move cursor shape *]
+      enum CURSOR_NOT_ALLOWED const       [* The operation-not-allowed shape *]
+      reset
+    end
+
     RlTypes module
         Any Color const
         Int ConfigFlag const
@@ -87,6 +240,7 @@ RdnRaylib module
         List FilePathList const
         List AutomationEventList const
         List AutomationEvent const
+        Int KeyboardKey const
     end
 
     [* private *]
@@ -881,6 +1035,42 @@ RdnRaylib module
 
     play-automation-event (RdnRaylib::RlTypes::AutomationEvent) () defun
       rdn_play_automation_event call
+    end
+
+    is-key-pressed (RdnRaylib::RlTypes::KeyboardKey) (Bool) defun
+        rdn_is_key_pressed call
+    end
+
+    is-key-pressed-repeat (RdnRaylib::RlTypes::KeyboardKey) (Bool) defun
+        rdn_is_key_pressed_repeat call
+    end
+
+    is-key-down (RdnRaylib::RlTypes::KeyboardKey) (Bool) defun
+        rdn_is_key_down call
+    end
+
+    is-key-released (RdnRaylib::RlTypes::KeyboardKey) (Bool) defun
+        rdn_is_key_released call
+    end
+
+    is-key-up (RdnRaylib::RlTypes::KeyboardKey) (Bool) defun
+        rdn_is_key_up call
+    end
+
+    get-key-pressed () (RdnRaylib::RlTypes::KeyboardKey) defun
+        rdn_get_key_pressed call
+    end
+
+    get-char-pressed () (Int) defun
+        rdn_get_char_pressed call
+    end
+
+    get-key-name (RdnRaylib::RlTypes::KeyboardKey) (Str) defun
+        rdn_get_key_name call
+    end
+
+    set-exit-key (RdnRaylib::RlTypes::KeyboardKey) () defun
+        rdn_set_exit_key call
     end
 
   end
