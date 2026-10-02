@@ -2299,6 +2299,49 @@ RDN_SIG(rdn_compute_sha256) {
     return ok;
 }
 
+RDN_SIG(rdn_load_automation_event_list) {
+    // in this function you don't have to unload it manually
+    // the language it self will clear the memory that is allocated for this list
+    CHECK(1)
+    const char* fileName = api->to_string(api,-1);
+    POP(1)
+    AutomationEventList ael = LoadAutomationEventList(fileName);
+    bool ok = rdn_automationeventlist_to_list(api, ael);
+    UnloadAutomationEventList(ael);
+    return ok;
+}
+
+RDN_SIG(rdn_export_automation_event_list) {
+    CHECK(2)
+    const char* fileName = api->to_string(api,-1);
+    POP(1)
+    // this should handle the stack by itself
+    AutomationEventList ael = rdn_list_to_automation_event_list(api);
+
+    bool ok = api->push_boolean(api,ExportAutomationEventList(ael,fileName));
+    UnloadAutomationEventList(ael);
+    return ok;
+}
+
+RDN_SIG(rdn_set_automation_event_list) {
+    AutomationEventList ael = rdn_list_to_automation_event_list(api);
+    SetAutomationEventList(&ael);
+    UnloadAutomationEventList(ael);
+    return true;
+}
+
+RDN_SIG(rdn_set_automation_event_base_frame) {
+    CHECK(1)
+
+    long frame;
+    if (!api->to_integer(api,-1,&frame))
+        return false;
+
+    POP(1)
+    SetAutomationEventBaseFrame((int)frame);
+    return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -2469,6 +2512,10 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_set_save_file_data_callback),
     REG_FUNC(rdn_set_load_file_text_callback),
     REG_FUNC(rdn_set_save_file_text_callback),
+    REG_FUNC(rdn_load_automation_event_list),
+    REG_FUNC(rdn_export_automation_event_list),
+    REG_FUNC(rdn_set_automation_event_list),
+    REG_FUNC(rdn_set_automation_event_base_frame),
 };
 
 bool rdn_module_init(RDNModule *module) {

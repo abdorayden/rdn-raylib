@@ -4,11 +4,14 @@
 #include "./raylib-6.0_linux_amd64/include/raylib.h"
 #include "rdn/include/rdn.h"
 #include "rdn/include/rdn_native.h"
+#include <assert.h>
 #include <rdn.h>
 #include <rdn_native.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define REG_FUNC(func) {#func , (func)}
 #define REG_TYPE struct { const char *func_name; RDNNativeFunction func; }
@@ -20,6 +23,94 @@
     ok &= api->push_number(api, (n));\
     ok &= api->list_append(api,-2,-1);\
     ok &= api->pop(api,1);
+
+#define GET_STATE(api)  \
+    (RDNState*)((NativeCallState*)(api)->userdata)->stack
+
+AutomationEvent rdn_list_to_automation_event(Value* list) {
+    AutomationEvent ae = {0};
+
+    if (list->type != VALUE_LIST) {
+        return ae;
+    }
+
+    assert(list->as.list.items[2]->type == VALUE_AS_VAR);
+    assert(list->as.list.items[2]->as.list.items[0]->type == VALUE_INTEGER);
+    assert(list->as.list.items[2]->as.list.items[1]->type == VALUE_INTEGER);
+    assert(list->as.list.items[2]->as.list.items[2]->type == VALUE_INTEGER);
+    assert(list->as.list.items[2]->as.list.items[3]->type == VALUE_INTEGER);
+
+    unsigned int frame  = (unsigned int)list->as.list.items[0]->as.integer;
+    unsigned int type  = (unsigned int)list->as.list.items[1]->as.integer;
+    int params[4]  = {
+        list->as.list.items[2]->as.list.items[0]->as.integer,
+        list->as.list.items[2]->as.list.items[1]->as.integer,
+        list->as.list.items[2]->as.list.items[2]->as.integer,
+        list->as.list.items[2]->as.list.items[3]->as.integer,
+    };
+    ae.frame = frame;
+    ae.type = type;
+    for (size_t i = 0; i < 4; ++i) {
+        ae.params[i] = list->as.list.items[2]->as.list.items[i]->as.integer;
+    }
+    return ae;
+}
+
+AutomationEventList rdn_list_to_automation_event_list(RDNApi* api) {
+    size_t length;
+    AutomationEventList ael = {0};
+    if (!api->list_len(api,-1,&length)){
+        return ael;
+    }
+
+    RDNState* state = GET_STATE(api);
+
+    Value* bigList = rdn_pop_value(state);
+
+    ael.events = (AutomationEvent *)RL_CALLOC(length, sizeof(AutomationEvent));
+    ael.capacity = length;
+    ael.count = 0;
+    for (size_t i = 0; i < length; ++i) {
+        ael.events[i] = rdn_list_to_automation_event(bigList->as.list.items[i]);
+        ael.count++;
+    }
+    return ael;
+}
+
+bool rdn_automationevent_to_list(RDNApi* api, AutomationEvent ae) {
+    bool ok = true;
+    ok &= api->push_list(api); // ()
+
+    ok &= api->push_integer(api, ae.frame);
+    ok &= api->list_append(api,-2,-1); // (ae.frame)
+    ok &= api->pop(api,1);
+
+    ok &= api->push_integer(api, ae.type);
+    ok &= api->list_append(api,-2,-1); // (ae.frame ae.type)
+    ok &= api->pop(api,1);
+
+    ok &= api->push_list(api); // (ae.frame ae.type) ()
+    for (size_t i = 0; i < 4; ++i) {
+        ok &= api->push_integer(api, ae.params[i]);
+        ok &= api->list_append(api,-2,-1);
+        ok &= api->pop(api,1);
+    }
+    ok &= api->list_append(api,-2,-1); // (ae.frame ae.type (0 1 2 3)) 
+    ok &= api->pop(api,1);
+    return ok;
+}
+
+bool rdn_automationeventlist_to_list(RDNApi* api, AutomationEventList ael) {
+    bool ok = api->push_list(api);
+
+    for (size_t i = 0; i < ael.count; ++i) {
+        ok &= rdn_automationevent_to_list(api, ael.events[i]);
+        ok &= api->list_append(api,-2,-1);
+        ok &= api->pop(api,1);
+    }
+
+    return ok;
+}
 
 bool rdn_filepathlist_to_list(RDNApi* api,FilePathList plist) {
     bool ok = api->push_list(api);

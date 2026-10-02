@@ -85,6 +85,7 @@ RdnRaylib module
         Func LoadFileTextCallback const
         Func SaveFileTextCallback const
         List FilePathList const
+        List AutomationEventList const
     end
 
     [* private *]
@@ -852,5 +853,22 @@ RdnRaylib module
     set-save-file-text-callback (RdnRaylib::RlTypes::SaveFileTextCallback) () defun
       rdn_set_save_file_text_callback call
     end
+
+    load-automation-event-list (Str [*filename*]) (RdnRaylib::RlTypes::AutomationEventList) defun
+        rdn_load_automation_event_list call
+    end
+
+    export-automation-event-list (RdnRaylib::RlTypes::AutomationEventList Str [*filename*]) (Bool) defun
+        rdn_export_automation_event_list call
+    end
+
+    set-automation-event-list (RdnRaylib::RlTypes::AutomationEventList [*like as ptr*]) () defun
+        rdn_set_automation_event_list call
+    end
+
+    set-automation-event-base-frame (Int [*frame*]) () defun
+        rdn_set_automation_event_base_frame call
+    end
+
 
   end
