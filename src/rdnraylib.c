@@ -2629,6 +2629,46 @@ RDN_SIG(rdn_get_mouse_y) {
     return api->push_integer(api,GetMouseY());
 }
 
+RDN_SIG(rdn_get_mouse_position) {
+    Vector2 ret = GetMousePosition();
+    bool ok = true;
+    ok &= api->push_list(api);
+    ok &= api->push_integer(api,ret.x);
+    ok &= api->list_append(api, -2, -1);
+    ok &= api->pop(api , 1);
+    ok &= api->push_integer(api,ret.y);
+    ok &= api->list_append(api, -2, -1);
+    ok &= api->pop(api , 1);
+    return ok;
+}
+
+RDN_SIG(rdn_get_mouse_delta) {
+    Vector2 ret = GetMouseDelta();
+    bool ok = true;
+    ok &= api->push_list(api);
+    ok &= api->push_integer(api,ret.x);
+    ok &= api->list_append(api, -2, -1);
+    ok &= api->pop(api , 1);
+    ok &= api->push_integer(api,ret.y);
+    ok &= api->list_append(api, -2, -1);
+    ok &= api->pop(api , 1);
+    return ok;
+}
+
+RDN_SIG(rdn_set_mouse_position) {
+    CHECK(2)
+    long x;
+    long y;
+    bool ok = api->to_integer(api , -1 , &y);
+    ok &= api->to_integer(api , -2 , &x);
+    if(!ok) {
+        return ok;
+    }
+    POP(2)
+    SetMousePosition((int)x, (int)y);
+    return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -2832,6 +2872,9 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_is_mouse_button_up),
     REG_FUNC(rdn_get_mouse_x),
     REG_FUNC(rdn_get_mouse_y),
+    REG_FUNC(rdn_get_mouse_position),
+    REG_FUNC(rdn_get_mouse_delta),
+    REG_FUNC(rdn_set_mouse_position),
 };
 
 bool rdn_module_init(RDNModule *module) {

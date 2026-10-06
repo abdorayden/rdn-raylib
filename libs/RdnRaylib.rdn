@@ -1174,4 +1174,16 @@ RdnRaylib module
         rdn_get_mouse_y call
     end
 
+    get-mouse-position () (RdnRaylib::RlTypes::Vector2) defun
+        rdn_get_mouse_position call
+    end
+
+    get-mouse-delta () (RdnRaylib::RlTypes::Vector2) defun
+        rdn_get_mouse_delta call
+    end
+
+    set-mouse-position (Int Int) () defun
+        rdn_set_mouse_position call
+    end
+
 end
