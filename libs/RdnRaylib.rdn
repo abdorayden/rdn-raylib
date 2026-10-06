@@ -1150,4 +1150,28 @@ RdnRaylib module
         rdn_set_gamepad_vibration call
     end
 
-  end
+    is-mouse-button-pressed (Int [*button*]) (Bool) defun
+        rdn_is_mouse_button_pressed call
+    end
+
+    is-mouse-button-down (Int [*button*]) (Bool) defun
+        rdn_is_mouse_button_down call
+    end
+
+    is-mouse-button-released (Int [*button*]) (Bool) defun
+        rdn_is_mouse_button_released call
+    end
+
+    is-mouse-button-up (Int [*button*]) (Bool) defun
+        rdn_is_mouse_button_up call
+    end
+
+    get-mouse-x () (Int) defun
+        rdn_get_mouse_x call
+    end
+
+    get-mouse-y () (Int) defun
+        rdn_get_mouse_y call
+    end
+
+end

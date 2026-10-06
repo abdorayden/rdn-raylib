@@ -2581,6 +2581,54 @@ RDN_SIG(rdn_set_gamepad_vibration) {
     return ok;
 }
 
+RDN_SIG(rdn_is_mouse_button_pressed) {
+    CHECK(1)
+    long button;
+    if (!api->to_integer(api,-1,&button)) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsMouseButtonPressed((int)button));
+}
+
+RDN_SIG(rdn_is_mouse_button_down) {
+    CHECK(1)
+    long button;
+    if (!api->to_integer(api,-1,&button)) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsMouseButtonDown((int)button));
+}
+
+RDN_SIG(rdn_is_mouse_button_released) {
+    CHECK(1)
+    long button;
+    if (!api->to_integer(api,-1,&button)) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsMouseButtonReleased((int)button));
+}
+
+RDN_SIG(rdn_is_mouse_button_up) {
+    CHECK(1)
+    long button;
+    if (!api->to_integer(api,-1,&button)) {
+        return false;
+    }
+    POP(1)
+    return api->push_boolean(api,IsMouseButtonUp((int)button));
+}
+
+RDN_SIG(rdn_get_mouse_x) {
+    return api->push_integer(api,GetMouseX());
+}
+
+RDN_SIG(rdn_get_mouse_y) {
+    return api->push_integer(api,GetMouseY());
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -2778,7 +2826,13 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_get_gamepad_axis_movement),
     REG_FUNC(rdn_set_gamepad_mappings),
     REG_FUNC(rdn_set_gamepad_vibration),
-  };
+    REG_FUNC(rdn_is_mouse_button_pressed),
+    REG_FUNC(rdn_is_mouse_button_down),
+    REG_FUNC(rdn_is_mouse_button_released),
+    REG_FUNC(rdn_is_mouse_button_up),
+    REG_FUNC(rdn_get_mouse_x),
+    REG_FUNC(rdn_get_mouse_y),
+};
 
 bool rdn_module_init(RDNModule *module) {
 
