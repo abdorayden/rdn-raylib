@@ -1138,4 +1138,16 @@ RdnRaylib module
         rdn_get_gamepad_axis_count call
     end
 
+    get-gamepad-axis-movement (Int Int) (Real) defun
+        rdn_get_gamepad_axis_movement call
+    end
+
+    set-gamepad-mappings (Str) (Int) defun
+        rdn_set_gamepad_mappings call
+    end
+
+    set-gamepad-vibration (Int Real Real Real) () defun
+        rdn_set_gamepad_vibration call
+    end
+
   end

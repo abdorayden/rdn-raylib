@@ -2536,6 +2536,51 @@ RDN_SIG(rdn_get_gamepad_axis_count) {
     return api->push_integer(api, GetGamepadAxisCount((int)gamepad));
 }
 
+RDN_SIG(rdn_get_gamepad_axis_movement) {
+    CHECK(2)
+    long gamepad = 0;
+    long axis = 0;
+    if (!api->to_integer(api,-1,&axis)) {
+        return false;
+    }
+    if (!api->to_integer(api,-2,&gamepad)) {
+        return false;
+    }
+    POP(2)
+    return api->push_number(api, GetGamepadAxisMovement((int) gamepad, (int) axis));
+}
+
+RDN_SIG(rdn_set_gamepad_mappings) {
+    CHECK(1)
+    const char* mappings = api->to_string(api, -1);
+    if (mappings == NULL) {
+        return false;
+    }
+    POP(1)
+    return api->push_integer(api, SetGamepadMappings(mappings));
+}
+
+RDN_SIG(rdn_set_gamepad_vibration) {
+    CHECK(4)
+    long gamepad;
+    double leftMotor;
+    double rightMotor;
+    double duration;
+    bool ok = true;
+
+    ok &= api->to_number(api, -1 , &duration);
+    ok &= api->to_number(api, -2 , &rightMotor);
+    ok &= api->to_number(api, -3 , &leftMotor);
+    ok &= api->to_integer(api, -4 , &gamepad);
+    if (!ok) {
+        return ok;
+    }
+
+    POP(4)
+    SetGamepadVibration((int) gamepad, (float) leftMotor, (float) rightMotor, (float) duration);
+    return ok;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -2730,6 +2775,9 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_is_gamepad_button_up),
     REG_FUNC(rdn_get_gamepad_button_pressed),
     REG_FUNC(rdn_get_gamepad_axis_count),
+    REG_FUNC(rdn_get_gamepad_axis_movement),
+    REG_FUNC(rdn_set_gamepad_mappings),
+    REG_FUNC(rdn_set_gamepad_vibration),
   };
 
 bool rdn_module_init(RDNModule *module) {
