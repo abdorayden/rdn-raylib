@@ -1226,4 +1226,36 @@ RdnRaylib module
         rdn_get_touch_point_count call
     end
 
+    set-gestures-enabled (Int [*flags*]) () defun
+        rdn_set_gestures_enabled call
+    end
+
+    is-gesture-detected (Int [*gesture*]) (Bool) defun
+        rdn_is_gesture_detected call
+    end
+
+    get-gesture-detected () (Int) defun
+        rdn_get_gesture_detected call
+    end
+
+    get-gesture-hold-duration () (Real) defun
+        rdn_get_gesture_hold_duration call
+    end
+
+    get-gesture-drag-vector () (RdnRaylib::RlTypes::Vector2) defun
+        rdn_get_gesture_drag_vector call
+    end
+
+    get-gesture-drag-angle () (Real) defun
+        rdn_get_gesture_drag_angle call
+    end
+
+    get-gesture-pinch-vector () (RdnRaylib::RlTypes::Vector2) defun
+        rdn_get_gesture_pinch_vector call
+    end
+
+    get-gesture-pinch-angle () (Real) defun
+        rdn_get_gesture_pinch_angle call
+    end
+
 end

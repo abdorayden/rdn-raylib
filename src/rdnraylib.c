@@ -2767,6 +2767,70 @@ RDN_SIG(rdn_get_touch_point_count){
     return api->push_integer(api, GetTouchPointCount());
 }
 
+RDN_SIG(rdn_set_gestures_enabled){
+    CHECK(1)
+    long flags;
+    if (!api->to_integer(api, -1 , &flags)) {
+        return false;
+    }
+    POP(1)
+    SetGesturesEnabled((unsigned int) flags);
+    return true;
+}
+
+RDN_SIG(rdn_is_gesture_detected){
+    CHECK(1)
+    long gesture;
+    if (!api->to_integer(api, -1 , &gesture)) {
+        return false;
+    }
+    POP(1)
+
+    return api->push_boolean(api, IsGestureDetected((unsigned int) gesture));
+}
+
+RDN_SIG(rdn_get_gesture_detected){
+    return api->push_integer(api, GetGestureDetected());
+}
+
+RDN_SIG(rdn_get_gesture_hold_duration){
+    return api->push_number(api, GetGestureHoldDuration());
+}
+
+RDN_SIG(rdn_get_gesture_drag_vector){
+    Vector2 vec =  GetGestureDragVector();
+    bool ok = true;
+    ok &= api->push_list(api);
+    ok &= api->push_number(api, vec.x);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+    ok &= api->push_number(api, vec.y);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+    return ok;
+}
+
+RDN_SIG(rdn_get_gesture_drag_angle){
+    return api->push_number(api, GetGestureDragAngle());
+}
+
+RDN_SIG(rdn_get_gesture_pinch_vector){
+    Vector2 vec =  GetGesturePinchVector();
+    bool ok = true;
+    ok &= api->push_list(api);
+    ok &= api->push_number(api, vec.x);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+    ok &= api->push_number(api, vec.y);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+    return ok;
+}
+
+RDN_SIG(rdn_get_gesture_pinch_angle){
+    return api->push_number(api, GetGesturePinchAngle());
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -2983,6 +3047,14 @@ REG_FUNC(rdn_get_touchy),
 REG_FUNC(rdn_get_touch_position),
 REG_FUNC(rdn_get_touch_point_id),
 REG_FUNC(rdn_get_touch_point_count),
+REG_FUNC(rdn_set_gestures_enabled),
+REG_FUNC(rdn_is_gesture_detected),
+REG_FUNC(rdn_get_gesture_detected),
+REG_FUNC(rdn_get_gesture_hold_duration),
+REG_FUNC(rdn_get_gesture_drag_vector),
+REG_FUNC(rdn_get_gesture_drag_angle),
+REG_FUNC(rdn_get_gesture_pinch_vector),
+REG_FUNC(rdn_get_gesture_pinch_angle),
 };
 
 bool rdn_module_init(RDNModule *module) {
