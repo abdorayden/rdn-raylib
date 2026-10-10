@@ -2669,6 +2669,104 @@ RDN_SIG(rdn_set_mouse_position) {
     return true;
 }
 
+RDN_SIG(rdn_set_mouse_offset) {
+    CHECK(2)
+    long offsetX;
+    long offsetY;
+    bool ok = api->to_integer(api , -1 , &offsetY);
+    ok &= api->to_integer(api , -2 , &offsetX);
+    if(!ok) {
+        return ok;
+    }
+    POP(2)
+    SetMouseOffset((int)offsetX, (int)offsetY);
+    return true;
+}
+
+RDN_SIG(rdn_set_mouse_scale) {
+    CHECK(2)
+    long scaleX;
+    long scaleY;
+    bool ok = api->to_integer(api , -1 , &scaleY);
+    ok &= api->to_integer(api , -2 , &scaleX);
+    if(!ok) {
+        return ok;
+    }
+    POP(2)
+    SetMouseScale((int)scaleX, (int)scaleY);
+    return true;
+}
+
+RDN_SIG(rdn_get_mouse_wheelmove){
+    return api->push_number(api, GetMouseWheelMove());
+}
+
+RDN_SIG(rdn_get_mouse_wheelmovev){
+    Vector2 vec =  GetMouseWheelMoveV();
+    bool ok = true;
+    ok &= api->push_list(api);
+    ok &= api->push_number(api, vec.x);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+    ok &= api->push_number(api, vec.y);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+    return ok;
+}
+
+RDN_SIG(rdn_set_mouse_cursor){
+    CHECK(1)
+    long cursor;
+    if (!api->to_integer(api, -1 , &cursor)) {
+        return false;
+    }
+    POP(1)
+    SetMouseCursor((int)cursor);
+    return true;
+}
+
+RDN_SIG(rdn_get_touchx){
+    return api->push_number(api ,GetTouchX() );
+}
+
+RDN_SIG(rdn_get_touchy){
+    return api->push_number(api ,GetTouchY() );
+}
+
+
+RDN_SIG(rdn_get_touch_position){
+    CHECK(1)
+    long index;
+    if (!api->to_integer(api, -1,&index)) {
+        return false;
+    }
+    POP(1)
+    Vector2 vec =  GetTouchPosition(index);
+    bool ok = true;
+    ok &= api->push_list(api);
+    ok &= api->push_number(api, vec.x);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+    ok &= api->push_number(api, vec.y);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+    return ok;
+}
+
+RDN_SIG(rdn_get_touch_point_id){
+    CHECK(1)
+    long index;
+    if (!api->to_integer(api, -1,&index)) {
+        return false;
+    }
+    POP(1)
+    return api->push_integer(api , GetTouchPointId(index));
+}
+
+RDN_SIG(rdn_get_touch_point_count){
+    return api->push_integer(api, GetTouchPointCount());
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -2875,6 +2973,16 @@ REG_TYPE reg_raylib[] = {
     REG_FUNC(rdn_get_mouse_position),
     REG_FUNC(rdn_get_mouse_delta),
     REG_FUNC(rdn_set_mouse_position),
+REG_FUNC(rdn_set_mouse_offset),
+REG_FUNC(rdn_set_mouse_scale),
+REG_FUNC(rdn_get_mouse_wheelmove),
+REG_FUNC(rdn_get_mouse_wheelmovev),
+REG_FUNC(rdn_set_mouse_cursor),
+REG_FUNC(rdn_get_touchx),
+REG_FUNC(rdn_get_touchy),
+REG_FUNC(rdn_get_touch_position),
+REG_FUNC(rdn_get_touch_point_id),
+REG_FUNC(rdn_get_touch_point_count),
 };
 
 bool rdn_module_init(RDNModule *module) {

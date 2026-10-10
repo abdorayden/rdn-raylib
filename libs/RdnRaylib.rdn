@@ -1186,4 +1186,44 @@ RdnRaylib module
         rdn_set_mouse_position call
     end
 
+    set-mouse-offset (Int Int) () defun
+        rdn_set_mouse_offset call
+    end
+
+    set-mouse-scale (Int Int) () defun
+        rdn_set_mouse_scale call
+    end
+
+    get-mouse-wheelmove () (Real) defun
+        rdn_get_mouse_wheelmove call
+    end
+
+    get-mouse-wheelmovev () (RdnRaylib::RlTypes::Vector2) defun
+        rdn_get_mouse_wheelmovev call
+    end
+
+    set-mouse-cursor (Int) () defun
+        rdn_set_mouse_cursor call
+    end
+
+    get-touchx () (Int) defun
+        rdn_get_touchx call
+    end
+
+    get-touchx () (Int) defun
+        rdn_get_touchx call
+    end
+
+    get-touch-position (Int) (RdnRaylib::RlTypes::Vector2) defun
+        rdn_get_touch_position call
+    end
+
+    get-touch-point-id (Int) (Int) defun
+        rdn_get_touch_point_id call
+    end
+
+    get-touch-point-count () (Int) defun
+        rdn_get_touch_point_count call
+    end
+
 end
