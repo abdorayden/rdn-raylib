@@ -2874,6 +2874,43 @@ RDN_SIG(rdn_update_camera_pro) {
     return rdn_camera3d_to_list(camera, api);
 }
 
+RDN_SIG(rdn_set_shapes_texture) {
+    CHECK(2)
+    Rectangle rect = rdn_list_to_rectangle(api);
+    RDNState* state = GET_STATE(api);
+
+    Value* val = rdn_pop_value(state);
+    bool ok = true;
+    Texture2D tex = rdn_list_to_texture(val, &ok);
+    if(!ok) {
+        return false;
+    }
+    SetShapesTexture(tex, rect);
+    return true;
+}
+
+RDN_SIG(rdn_get_shapes_texture) {
+    Texture2D ret = GetShapesTexture();
+    return rdn_texture_to_list(ret, api);
+}
+
+RDN_SIG(rdn_draw_pixel) {
+    CHECK(3)
+    bool ok = true;
+    long color;
+    long posX;
+    long posY;
+    ok &= api->to_integer(api, -1, &color);
+    ok &= api->to_integer(api, -2, &posY);
+    ok &= api->to_integer(api, -3, &posX);
+    if (!ok) {
+        return false;
+    }
+    POP(3)
+    DrawPixel((int)posX, (int)posY, GetColor((unsigned int)color));
+    return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -3100,6 +3137,9 @@ REG_FUNC(rdn_get_gesture_pinch_vector),
 REG_FUNC(rdn_get_gesture_pinch_angle),
 REG_FUNC(rdn_update_camera),
 REG_FUNC(rdn_update_camera_pro),
+REG_FUNC(rdn_set_shapes_texture),
+REG_FUNC(rdn_get_shapes_texture),
+REG_FUNC(rdn_draw_pixel),
 };
 
 bool rdn_module_init(RDNModule *module) {

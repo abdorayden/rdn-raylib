@@ -262,6 +262,7 @@ RdnRaylib module
         List Texture const
         RdnRaylib::RlTypes::Texture Texture2D const
         RdnRaylib::RlTypes::Camera3d Camera const
+        List Rectangle const
         List Ray const
         Int Uint const
         Int IntPtr const
@@ -1258,17 +1259,42 @@ RdnRaylib module
         rdn_get_gesture_pinch_angle call
     end
 
-    update-camera (RdnRaylib::RlTypes::Camera3D Int [*mode*]) (RdnRaylib::RlTypes::Camera3D) defun
+    update-camera (RdnRaylib::RlTypes::Camera3d Int) (RdnRaylib::RlTypes::Camera3d) defun
         rdn_update_camera call
     end
 
     update-camera-pro (
-                      RdnRaylib::RlTypes::Camera3D
+                      RdnRaylib::RlTypes::Camera3d
                       RdnRaylib::RlTypes::Vector3
                       RdnRaylib::RlTypes::Vector3
                       Real [*zoom*]
-                      ) (RdnRaylib::RlTypes::Camera3D) defun
+                      ) (RdnRaylib::RlTypes::Camera3d) defun
         rdn_update_camera_pro call
+    end
+
+    set-shapes-texture (
+                      RdnRaylib::RlTypes::Texture2D [*texture*]
+                      RdnRaylib::RlTypes::Rectangle [*source*]
+                       ) () defun
+        rdn_set_shapes_texture call
+    end
+
+    get-shapes-texture () (RdnRaylib::RlTypes::Texture2D) defun
+        rdn_get_shapes_texture call
+    end
+
+    draw-pixel (Int Int RdnRaylib::RlTypes::Color) () defun
+        RdnRaylib::Helpers::check-colors
+        rdn_draw_pixel call
+    end
+
+    draw-pixel-v (RdnRaylib::RlTypes::Vector2 RdnRaylib::RlTypes::Color) () defun
+        RdnRaylib::Helpers::check-colors
+        c let
+        0 index
+        1 index
+        c
+        rdn_draw_pixel call
     end
 
 end

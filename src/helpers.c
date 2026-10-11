@@ -27,6 +27,19 @@
 #define GET_STATE(api)  \
     (RDNState*)((NativeCallState*)(api)->userdata)->stack
 
+Rectangle rdn_list_to_rectangle(RDNApi* api) {
+    Rectangle rect = {0};
+    RDNState* state = GET_STATE(api);
+
+    Value* val = rdn_pop_value(state);
+
+    rect.x = val->as.list.items[0]->as.number;
+    rect.y = val->as.list.items[1]->as.number;
+    rect.width = val->as.list.items[2]->as.number;
+    rect.height = val->as.list.items[3]->as.number;
+    return rect;
+}
+
 AutomationEvent rdn_list_to_automation_event(Value* list) {
     AutomationEvent ae = {0};
 
@@ -512,6 +525,33 @@ Shader rdn_list_to_shader(Value* value, bool* ok) {
     // i don't know, is it safe ??
     shader.locs = (int*)(uintptr_t)l.items[0]->as.integer;
     return shader;
+}
+
+bool rdn_texture_to_list(Texture2D tex, RDNApi* api) {
+    bool ok = true;
+    ok &= api->push_list(api);
+
+    ok &= api->push_integer(api, tex.id);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+
+    ok &= api->push_integer(api, tex.width);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+
+    ok &= api->push_integer(api, tex.height);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+
+    ok &= api->push_integer(api, tex.mipmaps);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+
+    ok &= api->push_integer(api, tex.format);
+    ok &= api->list_append(api, -2,-1);
+    POP(1)
+
+    return ok;
 }
 
 Texture rdn_list_to_texture(Value* value , bool* ok) {
