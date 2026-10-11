@@ -2831,6 +2831,49 @@ RDN_SIG(rdn_get_gesture_pinch_angle){
     return api->push_number(api, GetGesturePinchAngle());
 }
 
+RDN_SIG(rdn_update_camera) {
+    CHECK(2)
+    long mode;
+    if (!api->to_integer(api, -1, &mode)) {
+        return false;
+    }
+    POP(1)
+
+    RDNState* state = GET_STATE(api);
+
+    Value* val = rdn_pop_value(state);
+    bool ok = true;
+    Camera3D camera = rdn_list_to_camera3d(val, &ok);
+    if (!ok) {
+        return false;
+    }
+    UpdateCamera(&camera, (int)mode);
+
+    return rdn_camera3d_to_list(camera, api);
+}
+
+RDN_SIG(rdn_update_camera_pro) {
+    CHECK(4)
+    double zoom;
+    if (!api->to_number(api, -1 , &zoom)) {
+        return false;
+    }
+    POP(1)
+    Vector3 rotation = rdn_list_to_vec3(api);
+    Vector3 movement = rdn_list_to_vec3(api);
+
+    RDNState* state = GET_STATE(api);
+
+    Value* val = rdn_pop_value(state);
+    bool ok = true;
+    Camera3D camera = rdn_list_to_camera3d(val, &ok);
+    if (!ok) {
+        return false;
+    }
+    UpdateCameraPro(&camera, movement, rotation, zoom);
+    return rdn_camera3d_to_list(camera, api);
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -3055,6 +3098,8 @@ REG_FUNC(rdn_get_gesture_drag_vector),
 REG_FUNC(rdn_get_gesture_drag_angle),
 REG_FUNC(rdn_get_gesture_pinch_vector),
 REG_FUNC(rdn_get_gesture_pinch_angle),
+REG_FUNC(rdn_update_camera),
+REG_FUNC(rdn_update_camera_pro),
 };
 
 bool rdn_module_init(RDNModule *module) {

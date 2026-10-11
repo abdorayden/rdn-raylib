@@ -562,6 +562,70 @@ RenderTexture rdn_list_to_render_texture(Value* value, bool* ok) {
     return render_texture;
 }
 
+Vector3 rdn_list_to_vec3(RDNApi* api) {
+    Vector3 ret = {0};
+
+    RDNState* state = GET_STATE(api);
+    Value* val = rdn_pop_value(state);
+
+    ret.x = val->as.list.items[0]->as.number;
+    ret.y = val->as.list.items[1]->as.number;
+    ret.z = val->as.list.items[2]->as.number;
+    return ret;
+}
+
+bool rdn_vec3_to_list(Vector3 vec, RDNApi* api) {
+    bool ok = true;
+
+    ok &= api->push_list(api); // Vector3
+    //
+    ok &= api->push_number(api, vec.x);
+    ok &= api->list_append(api, -2 , -1);
+    POP(1)
+
+    ok &= api->push_number(api, vec.y);
+    ok &= api->list_append(api, -2 , -1);
+    POP(1)
+
+    ok &= api->push_number(api, vec.z);
+    ok &= api->list_append(api, -2 , -1);
+    POP(1)
+    return ok;
+}
+
+bool rdn_camera3d_to_list(Camera3D camera, RDNApi* api) {
+    bool ok = true;
+    ok &= api->push_list(api); // Camera3D
+
+    if (!rdn_vec3_to_list(camera.position, api)) {
+        return false;
+    }
+    ok &= api->list_append(api, -2 , -1);
+    POP(1)
+
+    if (!rdn_vec3_to_list(camera.target, api)) {
+        return false;
+    }
+    ok &= api->list_append(api, -2 , -1);
+    POP(1)
+
+    if (!rdn_vec3_to_list(camera.up, api)) {
+        return false;
+    }
+    ok &= api->list_append(api, -2 , -1);
+    POP(1)
+
+    ok &= api->push_number(api, camera.fovy);
+    ok &= api->list_append(api, -2 , -1);
+    POP(1)
+
+    ok &= api->push_integer(api, camera.projection);
+    ok &= api->list_append(api, -2 , -1);
+    POP(1)
+
+    return ok;
+}
+
 Camera3D rdn_list_to_camera3d(Value* value, bool* ok) {
     Camera3D cam3d = {0};
     RDNValueList l = value->as.list;

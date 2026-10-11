@@ -1258,4 +1258,17 @@ RdnRaylib module
         rdn_get_gesture_pinch_angle call
     end
 
+    update-camera (RdnRaylib::RlTypes::Camera3D Int [*mode*]) (RdnRaylib::RlTypes::Camera3D) defun
+        rdn_update_camera call
+    end
+
+    update-camera-pro (
+                      RdnRaylib::RlTypes::Camera3D
+                      RdnRaylib::RlTypes::Vector3
+                      RdnRaylib::RlTypes::Vector3
+                      Real [*zoom*]
+                      ) (RdnRaylib::RlTypes::Camera3D) defun
+        rdn_update_camera_pro call
+    end
+
 end
