@@ -1297,4 +1297,14 @@ RdnRaylib module
         rdn_draw_pixel call
     end
 
+    draw-line-ex (
+                 RdnRaylib::RlTypes::Vector2  [*startPosk*]
+                 RdnRaylib::RlTypes::Vector2 [*endPosk*]
+                 Real  [*thick*]
+                 RdnRaylib::RlTypes::Color
+                 ) () defun
+        RdnRaylib::Helpers::check-colors
+        rdn_draw_line_ex call
+    end
+
 end

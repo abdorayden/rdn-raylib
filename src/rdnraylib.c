@@ -2911,6 +2911,25 @@ RDN_SIG(rdn_draw_pixel) {
     return true;
 }
 
+RDN_SIG(rdn_draw_line_ex) {
+    CHECK(4)
+
+    bool ok = true;
+    Vector2 startPos = {0};
+    Vector2 endPos = {0};
+    long color;
+    double thick;
+
+    ok &= api->to_integer(api, -1, &color);
+    ok &= api->to_number(api, -2, &thick);
+
+    POP(2)
+    endPos = rdn_list_to_vec2(api);
+    startPos = rdn_list_to_vec2(api);
+    DrawLineEx(startPos, endPos, (float)thick, GetColor(color));
+    return true;
+}
+
 REG_TYPE reg_raylib[] = {
 
     REG_FUNC(rdn_get_monitor_position),
@@ -3140,6 +3159,7 @@ REG_FUNC(rdn_update_camera_pro),
 REG_FUNC(rdn_set_shapes_texture),
 REG_FUNC(rdn_get_shapes_texture),
 REG_FUNC(rdn_draw_pixel),
+REG_FUNC(rdn_draw_line_ex),
 };
 
 bool rdn_module_init(RDNModule *module) {

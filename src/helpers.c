@@ -602,6 +602,17 @@ RenderTexture rdn_list_to_render_texture(Value* value, bool* ok) {
     return render_texture;
 }
 
+
+Vector2 rdn_list_to_vec2(RDNApi* api) {
+    Vector2 ret = {0};
+
+    RDNState* state = GET_STATE(api);
+    Value* val = rdn_pop_value(state);
+    ret.x = val->as.list.items[0]->as.number;
+    ret.y = val->as.list.items[1]->as.number;
+    return ret;
+}
+
 Vector3 rdn_list_to_vec3(RDNApi* api) {
     Vector3 ret = {0};
 
